@@ -27,7 +27,7 @@ bl_info = {
 }
 
 import bpy
-from bpy.types import Panel, Menu, Operator, INFO_MT_mesh_add
+from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty
 from math import cos, sin, atan2, pi
 from mathutils import Vector
@@ -80,14 +80,3 @@ class EllipticTorusOperator(Operator):
     elliptic_torus_object.select = True
     bpy.context.scene.objects.active = elliptic_torus_object
     return {"FINISHED"}
-
-def register():
-  bpy.utils.register_class(EllipticTorusOperator)
-  bpy.utils.register_class(EllipticTorusMenuItem)
-
-def unregister():
-  bpy.utils.unregister_class(EllipticTorusOperator)
-  bpy.utils.unregister_class(EllipticTorusMenuItem)
-
-if __name__ == "__main__":
-  register()
