@@ -81,15 +81,6 @@ class EllipticTorusOperator(Operator):
     bpy.context.scene.objects.active = elliptic_torus_object
     return {"FINISHED"}
 
-class EllipticTorusMenuItem(Menu):
-  bl_idname = "OBJECT_MT_elliptic_torus"
-  bl_label = "Elliptic Torus"
-
-  def draw(self, context):
-    self.layout.operator("mesh.add_elliptic_torus")
-
-  INFO_MT_mesh_add.append(draw)
-
 def register():
   bpy.utils.register_class(EllipticTorusOperator)
   bpy.utils.register_class(EllipticTorusMenuItem)
