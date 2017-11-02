@@ -54,14 +54,14 @@ class EllipticTorusOperator(Operator):
         #Calculate phi
         phi = 2*v*pi/self.vstep
 
-        #Calculate the angle of the tangent to the ellipse
-        tangent_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
+        #Calculate the angle of the normal to the ellipse
+        normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
 
-        #Calculate the X, Y and Z coordinates; place a circle at the origin on the YZ plane,
-        #rotate it on the Z axis by the angle of the tangent to the ellipse, and finally,
+        #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
+        #rotate it on the Z axis by the angle of the normal to the ellipse, and finally,
         #move it to the correct position on the ellipse.
-        x = self.tube_radius*sin(theta)*cos(tangent_angle)+self.major_semi_radius*cos(phi)
-        y = self.tube_radius*sin(theta)*sin(tangent_angle)+self.minor_semi_radius*sin(phi)
+        x = self.tube_radius*sin(theta)*cos(normal_angle)+self.major_semi_radius*cos(phi)
+        y = self.tube_radius*sin(theta)*sin(normal_angle)+self.minor_semi_radius*sin(phi)
         z = self.tube_radius*cos(theta)
 
         #Append the vertex coordinates to the list of vertices, and append a face to the list of faces.
@@ -80,3 +80,12 @@ class EllipticTorusOperator(Operator):
     elliptic_torus_object.select = True
     bpy.context.scene.objects.active = elliptic_torus_object
     return {"FINISHED"}
+
+class EllipticTorusMenuItem(Menu):
+  bl_idname = "OBJECT_MT_elliptic_torus"
+  bl_label = "Elliptic Torus"
+
+  def draw(self, context):
+    self.layout.operator("mesh.add_elliptic_torus")
+
+  INFO_MT_mesh_add.append(draw)
