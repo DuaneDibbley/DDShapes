@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-  "name" : "Elliptic Torus",
+  "name" : "Tori",
   "author" : "Duane Dibbley",
   "version" : (0, 1, 0),
   "blender" : (2, 79, 0),
