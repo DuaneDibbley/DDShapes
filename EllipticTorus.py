@@ -36,9 +36,9 @@ class EllipticTorusOperator(Operator):
   bl_idname = "mesh.add_elliptic_torus"
   bl_label = "Elliptic Torus"
   bl_options = {"REGISTER", "UNDO"}
-  major_semi_radius = FloatProperty(name="Major Semi-Radius", description="Half the major axis of the ellipse", default=2.4, min=0.0001, max=100.0)
-  minor_semi_radius = FloatProperty(name="Minor Semi-Radius", description="Half the major axis of the ellipse", default=0.9, min=0.0001, max=100.0)
-  tube_radius = FloatProperty(name="Tube Radius", description="Radius of the cross-section", default=0.1, min=0.0001, max=100.0)
+  major_semi_radius = FloatProperty(name="Major Semi-Radius", description="Half the major axis of the ellipse", default=2.4, min=0.0001, max=100.0, step=1, precision=4)
+  minor_semi_radius = FloatProperty(name="Minor Semi-Radius", description="Half the major axis of the ellipse", default=0.9, min=0.0001, max=100.0, step=1, precision=4)
+  tube_radius = FloatProperty(name="Tube Radius", description="Radius of the cross-section", default=0.1, min=0.0001, max=100.0, step=1, precision=4)
   vstep = IntProperty(name="Ellipse Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
   ustep = IntProperty(name="Tube Segments", description="Number of segments for the cross-section", default=16, min=1, max=1024)
 
