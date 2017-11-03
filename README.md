@@ -5,7 +5,7 @@ Blender add-ons for creating tori of varying configurations
 
 ## Installation
 1. Click the **Clone or download** button and save the zip file to your harddrive, but do not unzip it.
-2. Open up Blender and hit Ctrl+Alt+U och click _File_ -> _User Preferences_
+2. Open up Blender and hit Ctrl+Alt+U or click _File_ -> _User Preferences_
 3. Click _Add-ons_
 4. Click _Install Add-on from File..._
 5. Select the file you downloaded in step 1 and click _Install Add-on from File..._
