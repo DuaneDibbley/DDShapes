@@ -19,5 +19,5 @@ Setting the major semi-radius to a smaller value than the minor semi-radius is p
 
 #### Spacing
 Simple spacing just uses the standard equations for an ellipse.  
-Equiangular Normal places the circles of the cross-section such that the angle between the normals to the eiiplse is constant.  
+Equiangular Normal places the circles of the cross-section such that the angle between the normals to the ellipse is constant.  
 Equirectangular Radius  places the circles of the cross-section such that the angle between the radii is constant
