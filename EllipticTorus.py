@@ -28,7 +28,7 @@ bl_info = {
 
 import bpy
 from bpy.types import Panel, Menu, Operator
-from bpy.props import IntProperty, FloatProperty
+from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import cos, sin, atan2, pi
 from mathutils import Vector
 
@@ -38,8 +38,12 @@ class OBJECT_OT_mesh_elliptic_torus_add(Operator):
   bl_options = {"REGISTER", "UNDO"}
   major_semi_radius = FloatProperty(name="Major Semi-Radius", description="Half the major axis of the ellipse", default=2.4, min=0.0001, max=100.0, step=1, precision=4)
   minor_semi_radius = FloatProperty(name="Minor Semi-Radius", description="Half the major axis of the ellipse", default=0.9, min=0.0001, max=100.0, step=1, precision=4)
-  tube_radius = FloatProperty(name="Tube Radius", description="Radius of the cross-section", default=0.1, min=0.0001, max=100.0, step=1, precision=4)
   vstep = IntProperty(name="Ellipse Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
+  spacing_type = EnumProperty(items=[("spacing.simple", "Simple", "Increment the parameter phi equally for each point on the ellipse"),
+                                     ("spacing.normal", "Equiangular Normal", "Space between points on the ellipse equiangularly by the direction of the normals"),
+                                     ("spacing.radius", "Equiangular Radius", "Space between points on the ellipse equiangularly by the direction of the radii")],
+                              name="Spacing", description="Define how to calculate the space between the points on the ellipse", default="spacing.simple")
+  tube_radius = FloatProperty(name="Tube Radius", description="Radius of the cross-section", default=0.1, min=0.0001, max=100.0, step=1, precision=4)
   ustep = IntProperty(name="Tube Segments", description="Number of segments for the cross-section", default=16, min=1, max=1024)
 
   def execute(self, context):
@@ -51,11 +55,29 @@ class OBJECT_OT_mesh_elliptic_torus_add(Operator):
         #Calculate theta
         theta = 2*u*pi/self.ustep
 
-        #Calculate phi
-        phi = 2*v*pi/self.vstep
+        if self.spacing_type == "spacing.normal":
+          #Calculate the angle of the normal to the ellipse
+          normal_angle = 2*v*pi/self.vstep
 
-        #Calculate the angle of the tangent to the ellipse
-        normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
+          #Calculate phi
+          phi = atan2(self.minor_semi_radius*sin(normal_angle), self.major_semi_radius*cos(normal_angle))
+
+        elif self.spacing_type == "spacing.radius":
+          #Calculate the angle of the radius
+          radius_angle = 2*v*pi/self.vstep
+
+          #Calculate phi
+          phi = atan2(self.major_semi_radius*sin(radius_angle), self.minor_semi_radius*cos(radius_angle))
+
+          #Calculate the angle of the normal to the ellipse
+          normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
+
+        else:
+          #Calculate phi
+          phi = 2*v*pi/self.vstep
+
+          #Calculate the angle of the normal to the ellipse
+          normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
 
         #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
         #rotate it on the Z axis by the angle of the normal to the ellipse, and finally,
