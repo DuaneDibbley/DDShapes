@@ -30,8 +30,8 @@ from . import EllipticTorus
 import bpy
 from bpy.types import Menu, INFO_MT_mesh_add
 
-class EllipticTorusMenuItem(Menu):
-  bl_idname = "OBJECT_MT_elliptic_torus"
+class INFO_MT_mesh_elliptic_torus_add(Menu):
+  bl_idname = "INFO_MT_mesh_elliptic_torus_add"
   bl_label = "Elliptic Torus"
 
   def draw(self, context):

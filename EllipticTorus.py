@@ -32,7 +32,7 @@ from bpy.props import IntProperty, FloatProperty
 from math import cos, sin, atan2, pi
 from mathutils import Vector
 
-class EllipticTorusOperator(Operator):
+class OBJECT_OT_mesh_elliptic_torus_add(Operator):
   bl_idname = "mesh.add_elliptic_torus"
   bl_label = "Elliptic Torus"
   bl_options = {"REGISTER", "UNDO"}
