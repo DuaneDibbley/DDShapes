@@ -19,7 +19,7 @@
 bl_info = {
   "name" : "Elliptic Torus",
   "author" : "Duane Dibbley",
-  "version" : (0, 1, 0),
+  "version" : (0, 1, 1),
   "blender" : (2, 79, 0),
   "location" : "View3D > Add > Mesh",
   "description" : "Add an elliptic torus with the cross-section correctly following the ellipse",
@@ -32,10 +32,10 @@ from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import cos, sin, atan2, pi
 from mathutils import Vector
 
-class OBJECT_OT_mesh_elliptic_torus_add(Operator):
-  bl_idname = "mesh.add_elliptic_torus"
+class MESH_OT_elliptic_torus_add(Operator):
+  bl_idname = "mesh.elliptic_torus_add"
   bl_label = "Elliptic Torus"
-  bl_options = {"REGISTER", "UNDO"}
+  bl_options = {"REGISTER", "UNDO", "PRESET"}
   major_semi_radius = FloatProperty(name="Major Semi-Radius", description="Half the major axis of the ellipse", default=2.4, min=0.0001, max=100.0, step=1, precision=4)
   minor_semi_radius = FloatProperty(name="Minor Semi-Radius", description="Half the major axis of the ellipse", default=0.9, min=0.0001, max=100.0, step=1, precision=4)
   vstep = IntProperty(name="Ellipse Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
@@ -55,6 +55,7 @@ class OBJECT_OT_mesh_elliptic_torus_add(Operator):
         #Calculate theta
         theta = 2*u*pi/self.ustep
 
+        #Make the necessary preparatory calculations for placing the cross-sections by the angle between the normals to the ellipse
         if self.spacing_type == "spacing.normal":
           #Calculate the angle of the normal to the ellipse
           normal_angle = 2*v*pi/self.vstep
@@ -62,6 +63,7 @@ class OBJECT_OT_mesh_elliptic_torus_add(Operator):
           #Calculate phi
           phi = atan2(self.minor_semi_radius*sin(normal_angle), self.major_semi_radius*cos(normal_angle))
 
+        #Make the necessary preparatory calculations for placing the cross-sections by the angle between the radii of the ellipse
         elif self.spacing_type == "spacing.radius":
           #Calculate the angle of the radius
           radius_angle = 2*v*pi/self.vstep
@@ -72,6 +74,7 @@ class OBJECT_OT_mesh_elliptic_torus_add(Operator):
           #Calculate the angle of the normal to the ellipse
           normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
 
+        #Assume simple spacing and calculate phi and the angle of the normal accordingly
         else:
           #Calculate phi
           phi = 2*v*pi/self.vstep

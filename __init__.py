@@ -19,23 +19,23 @@
 bl_info = {
   "name" : "Tori",
   "author" : "Duane Dibbley",
-  "version" : (0, 1, 0),
+  "version" : (0, 1, 1),
   "blender" : (2, 79, 0),
   "location" : "View3D > Add > Mesh",
   "description" : "Add-on for creating tori of varying configurations",
   "category" : "Add Mesh"
 }
 
-from . import EllipticTorus
 import bpy
 from bpy.types import Menu, INFO_MT_mesh_add
+from . import EllipticTorus
 
 class INFO_MT_mesh_elliptic_torus_add(Menu):
   bl_idname = "INFO_MT_mesh_elliptic_torus_add"
   bl_label = "Elliptic Torus"
 
   def draw(self, context):
-    self.layout.operator("mesh.add_elliptic_torus")
+    self.layout.operator("mesh.elliptic_torus_add")
 
   INFO_MT_mesh_add.append(draw)
 
