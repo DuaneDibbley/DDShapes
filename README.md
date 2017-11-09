@@ -27,7 +27,7 @@ _Ring's Minor Semi-Axis_ is half the length of the major axis of the ellipse.
 _Ring Segments_ is the number of segements into which the ring is divided.  
 _Spacing_ defines how to calculate the distance between the the cross-sections along the ring.  
 _Cross-Section's Major Semi-Axis_ is half the length of the major axis of the cross-section.  
-_Cross-Section's Minor Semi-Axis_ is half the length of the minor axis of the cross-section.
+_Cross-Section's Minor Semi-Axis_ is half the length of the minor axis of the cross-section.  
 _Cross-Section Segments_ is the number of segements into which the cross-section is divided.
 
 Setting the major and minor semi-axes to the same value, makes a circular torus. The vertex order may differ from the torus built into Blender, but in all other respects it will be identical.
