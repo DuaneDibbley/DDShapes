@@ -19,7 +19,7 @@
 bl_info = {
   "name" : "Tori",
   "author" : "Duane Dibbley",
-  "version" : (0, 1, 1),
+  "version" : (0, 2, 0),
   "blender" : (2, 79, 0),
   "location" : "View3D > Add > Mesh",
   "description" : "Add-on for creating tori of varying configurations",
