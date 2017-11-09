@@ -29,7 +29,7 @@ _Ring Spacing_ defines how to calculate the distance between the the cross-secti
 _Cross-Section's Major Semi-Axis_ is half the length of the major axis of the cross-section.  
 _Cross-Section's Minor Semi-Axis_ is half the length of the minor axis of the cross-section.  
 _Cross-Section Segments_ is the number of segements into which the cross-section is divided.  
-_Cross-Section Twists_ is the number of half twists to do along the ring, i.e. a setting of 1 produces a Mäbius tube.  
+_Cross-Section Twists_ is the number of half twists to do along the ring, i.e. a setting of 1 produces a Möbius band with an interior.  
 _Cross-Section Initial Rotation_ rotates the cross-section on the Y axis **before** aligning it with the ring's normal and moving it to its position.  
 _Cross-Section Spacing_ defines how to calculate the distance between the vertices of the cross-section.
 
