@@ -25,14 +25,16 @@ This creates an elliptic torus with the cross-section correctly following the el
 _Ring's Major Semi-Axis_ is half the length of the major axis of the ellipse.  
 _Ring's Minor Semi-Axis_ is half the length of the major axis of the ellipse.  
 _Ring Segments_ is the number of segements into which the ring is divided.  
-_Spacing_ defines how to calculate the distance between the the cross-sections along the ring.  
+_Ring Spacing_ defines how to calculate the distance between the the cross-sections along the ring.  
 _Cross-Section's Major Semi-Axis_ is half the length of the major axis of the cross-section.  
 _Cross-Section's Minor Semi-Axis_ is half the length of the minor axis of the cross-section.  
-_Cross-Section Segments_ is the number of segements into which the cross-section is divided.
+_Cross-Section Segments_ is the number of segements into which the cross-section is divided.  
+_Cross-Section Rotation_ rotates the cross-section on the Y axis **before** aligning it with the ring's normal and moving it to its position.  
+_Cross-Section Spacing_ defines how to calculate the distance between the vertices of the cross-section.
 
-Setting the major and minor semi-axes to the same value, makes a circular torus. The vertex order may differ from the torus built into Blender, but in all other respects it will be identical.
+Setting the major and minor semi-axes to the same value, makes a circle.
 
-Setting the major semi-axis to a smaller value than the minor semi-axis is perfectly fine. While semantically an error, it doesn't pose a mathematical problem; the resulting torus will simply appear to have been rotated by 90 degress on the Z axis.
+Setting the major semi-axis to a smaller value than the minor semi-axis is perfectly fine. While semantically an error, it doesn't pose a mathematical problem; if you do this with the ring, it will be stretched on the Y axis rather than on the X axis, and if you do this on the cross-section, it will be taller that it is wide.
 
 ##### Spacing
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
