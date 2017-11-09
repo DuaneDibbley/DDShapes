@@ -36,15 +36,16 @@ class MESH_OT_elliptic_torus_add(Operator):
   bl_idname = "mesh.elliptic_torus_add"
   bl_label = "Elliptic Torus"
   bl_options = {"REGISTER", "UNDO", "PRESET"}
-  major_semi_radius = FloatProperty(name="Major Semi-Radius", description="Half the major axis of the ellipse", default=2.4, min=0.0001, max=100.0, step=1, precision=4)
-  minor_semi_radius = FloatProperty(name="Minor Semi-Radius", description="Half the major axis of the ellipse", default=0.9, min=0.0001, max=100.0, step=1, precision=4)
-  vstep = IntProperty(name="Ellipse Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
-  spacing_type = EnumProperty(items=[("spacing.simple", "Simple", "Increment the parameter phi equally for each point on the ellipse"),
+  major_major = FloatProperty(name="Ring's Major Semi-Axis", description="Half the major axis of the ring", default=2.4, min=0.0001, max=100.0, step=1, precision=4)
+  major_minor = FloatProperty(name="Ring's Minor Semi-Axis", description="Half the major axis of the ring", default=0.9, min=0.0001, max=100.0, step=1, precision=4)
+  vstep = IntProperty(name="Ring Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
+  ring_spacing_type = EnumProperty(items=[("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point on the ellipse (standard ellipse equations, which also give each ellipse sector an equal area)"),
                                      ("spacing.normal", "Equiangular Normal", "Space between points on the ellipse equiangularly by the direction of the normals"),
                                      ("spacing.radius", "Equiangular Radius", "Space between points on the ellipse equiangularly by the direction of the radii")],
-                              name="Spacing", description="Define how to calculate the space between the points on the ellipse", default="spacing.simple")
-  tube_radius = FloatProperty(name="Tube Radius", description="Radius of the cross-section", default=0.1, min=0.0001, max=100.0, step=1, precision=4)
-  ustep = IntProperty(name="Tube Segments", description="Number of segments for the cross-section", default=16, min=1, max=1024)
+                              name="Spacing", description="Define how to calculate the space between the points on the ellipse", default="spacing.area")
+  minor_major = FloatProperty(name="Cross-Section's Major Semi-Axis", description="Half the major of the cross-section", default=0.2, min=0.0001, max=100.0, step=1, precision=4)
+  minor_minor = FloatProperty(name="Cross-Section's Minor Semi-Axis", description="Half the minor of the cross-section", default=0.1, min=0.0001, max=100.0, step=1, precision=4)
+  ustep = IntProperty(name="Cross-Section Segments", description="Number of segments for the cross-section", default=16, min=1, max=1024)
 
   def execute(self, context):
     vertices = []
@@ -56,38 +57,38 @@ class MESH_OT_elliptic_torus_add(Operator):
         theta = 2*u*pi/self.ustep
 
         #Make the necessary preparatory calculations for placing the cross-sections by the angle between the normals to the ellipse
-        if self.spacing_type == "spacing.normal":
+        if self.ring_spacing_type == "spacing.normal":
           #Calculate the angle of the normal to the ellipse
           normal_angle = 2*v*pi/self.vstep
 
           #Calculate phi
-          phi = atan2(self.minor_semi_radius*sin(normal_angle), self.major_semi_radius*cos(normal_angle))
+          phi = atan2(self.major_minor*sin(normal_angle), self.major_major*cos(normal_angle))
 
         #Make the necessary preparatory calculations for placing the cross-sections by the angle between the radii of the ellipse
-        elif self.spacing_type == "spacing.radius":
+        elif self.ring_spacing_type == "spacing.radius":
           #Calculate the angle of the radius
           radius_angle = 2*v*pi/self.vstep
 
           #Calculate phi
-          phi = atan2(self.major_semi_radius*sin(radius_angle), self.minor_semi_radius*cos(radius_angle))
+          phi = atan2(self.major_major*sin(radius_angle), self.major_minor*cos(radius_angle))
 
           #Calculate the angle of the normal to the ellipse
-          normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
+          normal_angle = atan2(self.major_major*sin(phi), self.major_minor*cos(phi))
 
-        #Assume simple spacing and calculate phi and the angle of the normal accordingly
+        #Assume equal area spacing and calculate phi and the angle of the normal accordingly
         else:
           #Calculate phi
           phi = 2*v*pi/self.vstep
 
           #Calculate the angle of the normal to the ellipse
-          normal_angle = atan2(self.major_semi_radius*sin(phi), self.minor_semi_radius*cos(phi))
+          normal_angle = atan2(self.major_major*sin(phi), self.major_minor*cos(phi))
 
         #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
         #rotate it on the Z axis by the angle of the normal to the ellipse, and finally,
         #move it to the correct position on the ellipse.
-        x = self.tube_radius*sin(theta)*cos(normal_angle)+self.major_semi_radius*cos(phi)
-        y = self.tube_radius*sin(theta)*sin(normal_angle)+self.minor_semi_radius*sin(phi)
-        z = self.tube_radius*cos(theta)
+        x = self.minor_major*sin(theta)*cos(normal_angle)+self.major_major*cos(phi)
+        y = self.minor_major*sin(theta)*sin(normal_angle)+self.major_minor*sin(phi)
+        z = self.minor_minor*cos(theta)
 
         #Append the vertex coordinates to the list of vertices, and append a face to the list of faces.
         #The list of faces uses vertices that have not yet been created when appending intermediate faces,
