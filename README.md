@@ -35,7 +35,7 @@ _Cross-Section Spacing_ defines how to calculate the distance between the vertic
 
 Setting the major and minor semi-axes to the same value, makes a circle.
 
-Setting the major semi-axis to a smaller value than the minor semi-axis is perfectly fine. While semantically an error, it doesn't pose a mathematical problem; if you do this with the ring, it will be stretched on the Y axis rather than on the X axis, and if you do this on the cross-section, it will be taller that it is wide.
+Setting the major semi-axis to a smaller value than the minor semi-axis is perfectly fine. While semantically an error, it doesn't pose a mathematical problem; if you do this with the ring, it will be stretched on the Y axis rather than on the X axis, and if you do this on the cross-section, it will be taller than it is wide.
 
 ##### Spacing
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
