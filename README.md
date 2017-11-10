@@ -44,5 +44,5 @@ Setting the major semi-axis to a smaller value than the minor semi-axis is perfe
 ##### Spacing
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
 Equiangular Normal places the vertices of the ellipse such that the angle between the normals to the ellipse is constant.  
-Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.
+Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.  
 Equidistant places the vertices of the ellipse at (roughly) equal distant. It's not perfect, but visually fine. This is a bit slow, and I'm trying to determine which of the algorithms available in SciPy to use to get a good compromise between accuracy and speed.
