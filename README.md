@@ -1,6 +1,10 @@
 # Tori
 Blender add-ons for creating tori of varying configurations
 
+**N.B. Master Branch now depends on SciPy.**  
+For information on how to get SciPy to work in Blender, take a look at [Using 3rd party Python modules](https://blender.stackexchange.com/questions/5287/using-3rd-party-python-modules) at [Blender Stack Exchange](https://blender.stackexchange.com/).  
+If you're unable or unwilling to install SciPy, you need to stick with the 0.2 branch.
+
 -----
 
 ## Installation
@@ -39,5 +43,6 @@ Setting the major semi-axis to a smaller value than the minor semi-axis is perfe
 
 ##### Spacing
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
-Equiangular Normal places the circles of the cross-section such that the angle between the normals to the ellipse is constant.  
-Equirectangular Radius  places the circles of the cross-section such that the angle between the radii is constant
+Equiangular Normal places the vertices of the ellipse such that the angle between the normals to the ellipse is constant.  
+Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.
+Equidistant places the vertices of the ellipse at (roughly) equal distant. It's not perfect, but visually fine. This is a bit slow, and I'm trying to determine which of the algorithms available in SciPy to use to get a good compromise between accuracy and speed.
