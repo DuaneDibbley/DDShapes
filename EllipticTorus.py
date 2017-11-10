@@ -19,7 +19,7 @@
 bl_info = {
   "name" : "Elliptic Torus",
   "author" : "Duane Dibbley",
-  "version" : (0, 2, 1),
+  "version" : (0, 3, 0),
   "blender" : (2, 79, 0),
   "location" : "View3D > Add > Mesh",
   "description" : "Add an elliptic torus with the cross-section correctly following the ellipse",
@@ -29,21 +29,36 @@ bl_info = {
 import bpy
 from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty, EnumProperty
-from math import cos, sin, atan2, pi
+from math import cos, sin, atan2, pi, sqrt
 from mathutils import Vector
+from scipy.integrate import quad
+from scipy.optimize import fsolve
+from scipy.special import hyp2f1
 
-def getParamAndNormal(major, minor, input_param, spacing_type):
+def arcFunc(theta, major, minor):
+  return sqrt((-major*sin(theta))**2+(minor*cos(theta))**2)
+
+def arcLength(theta, major, minor, arc_length):
+  return quad(arcFunc, a=0.0, b=theta, args=(major, minor))[0]-arc_length
+
+def getParamAndNormal(major, minor, input_param, steps, spacing_type):
   if spacing_type == "spacing.normal":
-    normal_angle = input_param
-    output_param = atan2(minor*sin(input_param), major*cos(input_param))
+    normal_angle = 2*pi*input_param/steps
+    output_param = atan2(minor*sin(2*pi*input_param/steps), major*cos(2*pi*input_param/steps))
 
   elif spacing_type == "spacing.radius":
-    output_param = atan2(major*sin(input_param), minor*cos(input_param))
+    output_param = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
+    normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
+
+  elif spacing_type == "spacing.equidistant":
+    circumference = 2*pi*major*hyp2f1(-.5, .5, 1, 1-(minor/major)**2)
+    arc_length = circumference*input_param/steps
+    output_param = fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0]
     normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
 
   else:
-    output_param = input_param
-    normal_angle = atan2(major*sin(input_param), minor*cos(input_param))
+    output_param = 2*pi*input_param/steps
+    normal_angle = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
 
   return output_param, normal_angle
 
@@ -56,7 +71,8 @@ class MESH_OT_elliptic_torus_add(Operator):
   vstep = IntProperty(name="Ring Segments", description="Number of segments for the ellipse", default=48, min=1, max=1024)
   ring_spacing_type = EnumProperty(items=[("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point on the ring (standard ellipse equations)"),
                                      ("spacing.normal", "Equiangular Normal", "Space between points on the ring equiangularly by the direction of the normals"),
-                                     ("spacing.radius", "Equiangular Radius", "Space between points on the ring equiangularly by the direction of the radii")],
+                                     ("spacing.radius", "Equiangular Radius", "Space between points on the ring equiangularly by the direction of the radii"),
+                                     ("spacing.equidistant", "Equidistant", "Place points on the ring at equal distance")],
                               name="Ring Spacing", description="Define how to calculate the space between the points on the ring", default="spacing.area")
   minor_major = FloatProperty(name="Cross-Section's Major Semi-Axis", description="Half the major of the cross-section", default=0.2, min=0.0, max=100.0, step=1, precision=3)
   minor_minor = FloatProperty(name="Cross-Section's Minor Semi-Axis", description="Half the minor of the cross-section", default=0.1, min=0.0, max=100.0, step=1, precision=3)
@@ -65,7 +81,8 @@ class MESH_OT_elliptic_torus_add(Operator):
   cross_rotation = FloatProperty(name="Cross-Section Initial Rotation", description="Initial rotation of the cross-section", default=0.0, min=-pi/2.0, max=pi/2.0, step=10, precision=3, subtype="ANGLE")
   cross_spacing_type = EnumProperty(items=[("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point on the cross-section (standard ellipse equations)"),
                                      ("spacing.normal", "Equiangular Normal", "Space between points on the cross-section equiangularly by the direction of the normals"),
-                                     ("spacing.radius", "Equiangular Radius", "Space between points on the cross-section equiangularly by the direction of the radii")],
+                                     ("spacing.radius", "Equiangular Radius", "Space between points on the cross-section equiangularly by the direction of the radii"),
+                                     ("spacing.equidistant", "Equidistant", "Place points on the cross-section at equal distance")],
                               name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section", default="spacing.area")
 
   def execute(self, context):
@@ -75,8 +92,8 @@ class MESH_OT_elliptic_torus_add(Operator):
       for u in range(self.ustep):
 
         #Calculate the parameters and the angles of the normals for the ring and the cross-section respectively
-        theta, cross_normal_angle = getParamAndNormal(self.minor_major, self.minor_minor, 2*u*pi/self.ustep, self.cross_spacing_type)
-        phi, ring_normal_angle = getParamAndNormal(self.major_major, self.major_minor, 2*v*pi/self.vstep, self.ring_spacing_type)
+        theta, cross_normal_angle = getParamAndNormal(self.minor_major, self.minor_minor, u, self.ustep, self.cross_spacing_type)
+        phi, ring_normal_angle = getParamAndNormal(self.major_major, self.major_minor, v, self.vstep, self.ring_spacing_type)
 
         #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
         #rotate it on the Z axis by the angle of the normal to the ring, and finally,
