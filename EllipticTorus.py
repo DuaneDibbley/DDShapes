@@ -51,7 +51,7 @@ def getParamAndNormal(major, minor, input_param, steps, spacing_type):
     normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
 
   elif spacing_type == "spacing.equidistant":
-    circumference = 2*pi*major*hyp2f1(-.5, .5, 1, 1-(minor/major)**2)
+    circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
     arc_length = circumference*input_param/steps
     output_param = fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0]
     normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
