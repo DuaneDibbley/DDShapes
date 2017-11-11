@@ -30,7 +30,7 @@ import bpy
 from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import cos, sin, pi
-from mathutils import Vector, Quaternion
+from mathutils import Vector, Matrix, Euler
 from . import HelperFunctions
 
 class MESH_OT_elliptic_torus_add(Operator):
@@ -73,9 +73,9 @@ class MESH_OT_elliptic_torus_add(Operator):
       x = self.major_major*cos(phi)
       y = self.major_minor*sin(phi)
       z = 0.0
-      cross_rot = Quaternion((cos(ring_normal_angle/2.0), 0.0, 0.0, sin(ring_normal_angle/2.0)))
+      cross_rot = Euler((0.0, 0.0, ring_normal_angle), "XYZ").to_matrix()
       if self.cross_twist > 0 or self.cross_rotation != 0.0:
-        cross_rot = Quaternion((cos((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0, sin((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0))*cross_rot
+        cross_rot = Euler((0.0, self.cross_rotation+self.cross_twist*v*pi/self.vstep, 0.0), "XYZ").to_matrix()*cross_rot
       ring.append([Vector((x, y, z)), cross_rot])
 
     vertices = []
