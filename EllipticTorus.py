@@ -30,7 +30,7 @@ import bpy
 from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import cos, sin, pi
-from mathutils import Vector
+from mathutils import Vector, Quaternion
 from . import HelperFunctions
 
 class MESH_OT_elliptic_torus_add(Operator):
@@ -57,28 +57,40 @@ class MESH_OT_elliptic_torus_add(Operator):
                               name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section", default="spacing.area")
 
   def execute(self, context):
+    #Create the base shape of the cross-section
+    cross = []
+    for u in range(self.ustep):
+      theta, cross_normal_angle = HelperFunctions.getParamAndNormal(self.minor_major, self.minor_minor, u, self.ustep, self.cross_spacing_type)
+      x = self.minor_major*cos(theta)
+      y = 0.0
+      z = self.minor_minor*sin(theta)
+      cross.append(Vector((x, y, z))
+
+    #Create the base shape of the ring, and combine it with information on how to rotate and align the cross-section
+    ring = []
+    for v in range(self.vstep):
+      phi, ring_normal_angle = HelperFunctions.getParamAndNormal(self.major_major, self.major_minor, v, self.vstep, self.ring_spacing_type)
+      x = self.major_major*cos(phi)
+      y = self.major_minor*sin(phi)
+      z = 0.0
+      cross_rot = Quaternion((cos(ring_normal_angle/2.0), 0.0, 0.0, sin(ring_normal_angle/2.0)))
+      if self.cross_twist > 0 or self.cross_rotation != 0.0:
+        cross_rot = cross_rot*Quaternion((cos((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0, sin((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0)))
+      ring.append(Vector((x, y, z)), cross_rot)
+
     vertices = []
     faces = []
     for v in range(self.vstep):
       for u in range(self.ustep):
-
-        #Calculate the parameters and the angles of the normals for the ring and the cross-section respectively
-        theta, cross_normal_angle = HelperFunctions.getParamAndNormal(self.minor_major, self.minor_minor, u, self.ustep, self.cross_spacing_type)
-        phi, ring_normal_angle = HelperFunctions.getParamAndNormal(self.major_major, self.major_minor, v, self.vstep, self.ring_spacing_type)
-
-        #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
-        #rotate it on the Z axis by the angle of the normal to the ring, and finally,
-        #move it to the correct position on the ring.
-        cross_rot = self.cross_rotation+self.cross_twist*v*pi/self.vstep
-        x = (self.minor_major*cos(theta)*cos(cross_rot)-self.minor_minor*sin(theta)*sin(cross_rot))*cos(ring_normal_angle)+self.major_major*cos(phi)
-        y = (self.minor_major*cos(theta)*cos(cross_rot)-self.minor_minor*sin(theta)*sin(cross_rot))*sin(ring_normal_angle)+self.major_minor*sin(phi)
-        z = self.minor_major*cos(theta)*sin(cross_rot)+self.minor_minor*sin(theta)*cos(cross_rot)
+        cross_vert = cross[u]
+        cross_vert.rotate(ring[v][1])
+        cross_vert = cross_vert+ring[v][0]
 
         #Append the vertex coordinates to the list of vertices, and append a face to the list of faces.
         #The list of faces uses vertices that have not yet been created when appending intermediate faces,
         #however this is remedied at the end, as then it bridges with the vertices created at the beginning.
         #It uses modulo to make sure it doesn't overflow.
-        vertices.append(Vector((x, y, z)))
+        vertices.append(cross_vert)
         if v == self.vstep-1:
           u_bridge_pos = (u+self.cross_twist%2*self.ustep//2)%self.ustep
         else:
