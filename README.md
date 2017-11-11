@@ -45,4 +45,4 @@ Setting the major semi-axis to a smaller value than the minor semi-axis is perfe
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
 Equiangular Normal places the vertices of the ellipse such that the angle between the normals to the ellipse is constant.  
 Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.  
-Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, and I'll be doing some optimisations in upcoming commits. I'll also try out the different algorithms available in SciPy, to try to determine which gives the best compromise between accuracy and speed.
+Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
