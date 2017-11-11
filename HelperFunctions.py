@@ -28,6 +28,12 @@ def arcLength(theta, major, minor, arc_length):
   return quad(arcFunc, a=0.0, b=theta, args=(major, minor))[0]-arc_length
 
 def getParamAndNormal(major, minor, input_param, steps, spacing_type):
+  if input_param == 0:
+    return 0.0, 0.0
+
+  if major == minor:
+    spacing_type = "spacing.area"
+
   if spacing_type == "spacing.normal":
     normal_angle = 2*pi*input_param/steps
     output_param = atan2(minor*sin(2*pi*input_param/steps), major*cos(2*pi*input_param/steps))
