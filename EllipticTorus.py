@@ -75,7 +75,7 @@ class MESH_OT_elliptic_torus_add(Operator):
       z = 0.0
       cross_rot = Euler((0.0, 0.0, ring_normal_angle), "XYZ").to_matrix()
       if self.cross_twist > 0 or self.cross_rotation != 0.0:
-        cross_rot = Euler((0.0, self.cross_rotation+self.cross_twist*v*pi/self.vstep, 0.0), "XYZ").to_matrix()*cross_rot
+        cross_rot = cross_rot*Euler((0.0, self.cross_rotation+self.cross_twist*v*pi/self.vstep, 0.0), "XYZ").to_matrix()
       ring.append([Vector((x, y, z)), cross_rot])
 
     vertices = []
