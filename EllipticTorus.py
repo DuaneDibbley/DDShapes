@@ -31,7 +31,7 @@ from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import cos, sin, pi
 from mathutils import Vector
-from HelperFunctions import getParamAndNormal
+from . import HelperFunctions
 
 class MESH_OT_elliptic_torus_add(Operator):
   bl_idname = "mesh.elliptic_torus_add"
@@ -63,8 +63,8 @@ class MESH_OT_elliptic_torus_add(Operator):
       for u in range(self.ustep):
 
         #Calculate the parameters and the angles of the normals for the ring and the cross-section respectively
-        theta, cross_normal_angle = getParamAndNormal(self.minor_major, self.minor_minor, u, self.ustep, self.cross_spacing_type)
-        phi, ring_normal_angle = getParamAndNormal(self.major_major, self.major_minor, v, self.vstep, self.ring_spacing_type)
+        theta, cross_normal_angle = HelperFunctions.getParamAndNormal(self.minor_major, self.minor_minor, u, self.ustep, self.cross_spacing_type)
+        phi, ring_normal_angle = HelperFunctions.getParamAndNormal(self.major_major, self.major_minor, v, self.vstep, self.ring_spacing_type)
 
         #Calculate the X, Y and Z coordinates; place a circle at the origin on the XZ plane,
         #rotate it on the Z axis by the angle of the normal to the ring, and finally,
