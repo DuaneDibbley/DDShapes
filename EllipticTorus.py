@@ -64,7 +64,7 @@ class MESH_OT_elliptic_torus_add(Operator):
       x = self.minor_major*cos(theta)
       y = 0.0
       z = self.minor_minor*sin(theta)
-      cross.append(Vector((x, y, z))
+      cross.append(Vector((x, y, z)))
 
     #Create the base shape of the ring, and combine it with information on how to rotate and align the cross-section
     ring = []
