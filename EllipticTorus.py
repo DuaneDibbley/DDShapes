@@ -82,9 +82,7 @@ class MESH_OT_elliptic_torus_add(Operator):
     faces = []
     for v in range(self.vstep):
       for u in range(self.ustep):
-        cross_vert = cross[u]
-        cross_vert.rotate(ring[v][1])
-        cross_vert = cross_vert+ring[v][0]
+        cross_vert = ring[v][1]*cross[u]+ring[v][0]
 
         #Append the vertex coordinates to the list of vertices, and append a face to the list of faces.
         #The list of faces uses vertices that have not yet been created when appending intermediate faces,
