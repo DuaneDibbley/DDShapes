@@ -50,7 +50,7 @@ def getParamAndNormal(major, minor, input_param, steps, spacing_type):
     output_param = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
     normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
 
-  elif spacing_type == "spacing.equidistant":
+  elif spacing_type == "spacing.arc":
     circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
     arc_length = circumference*input_param/steps
     output_param = fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0]
@@ -72,7 +72,7 @@ class MESH_OT_elliptic_torus_add(Operator):
   ring_spacing_type = EnumProperty(items=[("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point on the ring (standard ellipse equations)"),
                                      ("spacing.normal", "Equiangular Normal", "Space between points on the ring equiangularly by the direction of the normals"),
                                      ("spacing.radius", "Equiangular Radius", "Space between points on the ring equiangularly by the direction of the radii"),
-                                     ("spacing.equidistant", "Equidistant", "Place points on the ring at equal distance")],
+                                     ("spacing.arc", "Equal Arc Length", "Place points on the ring at equal distance")],
                               name="Ring Spacing", description="Define how to calculate the space between the points on the ring", default="spacing.area")
   minor_major = FloatProperty(name="Cross-Section's Major Semi-Axis", description="Half the major of the cross-section", default=0.2, min=0.0, max=100.0, step=1, precision=3)
   minor_minor = FloatProperty(name="Cross-Section's Minor Semi-Axis", description="Half the minor of the cross-section", default=0.1, min=0.0, max=100.0, step=1, precision=3)
@@ -82,7 +82,7 @@ class MESH_OT_elliptic_torus_add(Operator):
   cross_spacing_type = EnumProperty(items=[("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point on the cross-section (standard ellipse equations)"),
                                      ("spacing.normal", "Equiangular Normal", "Space between points on the cross-section equiangularly by the direction of the normals"),
                                      ("spacing.radius", "Equiangular Radius", "Space between points on the cross-section equiangularly by the direction of the radii"),
-                                     ("spacing.equidistant", "Equidistant", "Place points on the cross-section at equal distance")],
+                                     ("spacing.arc", "Equal Arc Length", "Place points on the cross-section at equal distance")],
                               name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section", default="spacing.area")
 
   def execute(self, context):
