@@ -75,7 +75,7 @@ class MESH_OT_elliptic_torus_add(Operator):
       z = 0.0
       cross_rot = Quaternion((cos(ring_normal_angle/2.0), 0.0, 0.0, sin(ring_normal_angle/2.0)))
       if self.cross_twist > 0 or self.cross_rotation != 0.0:
-        cross_rot = cross_rot*Quaternion((cos((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0, sin((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0))
+        cross_rot = Quaternion((cos((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0, sin((self.cross_rotation+self.cross_twist*v*pi/self.vstep)/2.0), 0.0))*cross_rot
       ring.append([Vector((x, y, z)), cross_rot])
 
     vertices = []
