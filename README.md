@@ -48,4 +48,4 @@ Equirectangular Radius places vertices of the ellipse the such that the angle be
 Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
 
 #### Known issues  
-The thickness of the tube isn't exactly constant. This is especially visible if the ring has a high eccentricity and/or low segment count.
+The thickness of the tube isn't exactly constant. This is especially visible if the ring has a high eccentricity and/or low segment count. I've been trying to fix this, but with the fix I had, Catmull-Clark subdivision breaks the tube thickness. I may eventually include an option to choose which is the lesser of two evils, but for now I'm not committing the fix until I've investigated options further.
