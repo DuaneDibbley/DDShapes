@@ -46,3 +46,6 @@ Equal Area spacing just uses the standard equations for an ellipse, which cause 
 Equiangular Normal places the vertices of the ellipse such that the angle between the normals to the ellipse is constant.  
 Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.  
 Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
+
+#### Known issues  
+The thickness of the tube isn't exactly constant. This is especially visible if the ring has a high eccentricity and/or low segment count.
