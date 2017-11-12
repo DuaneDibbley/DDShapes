@@ -49,7 +49,7 @@ Equirectangular Radius places vertices of the ellipse the such that the angle be
 Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
 
 ##### Tube thickness
-Equal Cross-Sections leaves the cross-sections at the size defined by the cross-section axes settings. However, if the ring is highly eccentric and/or has a very low segment count, this will cause the tube to be visibly thinner near accute angles and visible near obtuse angles.  
+Equal Cross-Sections leaves the cross-sections at the size defined by the cross-section axes settings. However, if the ring is highly eccentric and/or has a very low segment count, this will cause the tube to be visibly thinner near accute angles and visibly thicker near obtuse angles.  
 Constant Tube Thickness scales the cross-sections to accommodate for the varying thickness with highly eccentric rings and rings with a low segment count. However, if you then subdivide using a smoothing algorithm like Catmull-Clark, this may backfire and actually make the tube visibly thicker at accute angles and visible thinner at obtuse angles.
 
 I've not been able to find an all purpose algorithm, and these are the best I've been able to come up with so far. You need to choose on a case by case basis.
