@@ -77,9 +77,9 @@ def getTwistAngle(twist, amplitude, twist_type, v, step):
     if twist_type == "twist.sine":
         twist_angle = amplitude*sin(twist*2*v*pi/step)
     elif twist_type == "twist.sincn":
-        twist_angle = amplitude*sinc(twist*pi*(2*v/step-1.0))
-    elif twist_type =="twist.sinc":
         twist_angle = amplitude*sinc(twist*(2*v/step-1.0))
+    elif twist_type =="twist.sinc":
+        twist_angle = amplitude*sinc(twist*(2*v/step-1.0)/pi)
     else:
         twist_angle = amplitude*twist*v/step
     return twist_angle
