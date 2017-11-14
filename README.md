@@ -51,9 +51,9 @@ Equirectangular Radius places vertices of the ellipse the such that the angle be
 Causes the torus to be twisted. This is calculated as if the distance between two adjacent cross-sections is constant along the circumference of the ring, so the appearance is affected by the ring spacing of the ring.
 
 ###### Twist Type
-Linear increases the twist linearly between each cross-section.
+Linear increases the twist linearly between each cross-section.  
 Sinusoidal twists back and forth like a sine wave along the tube.  
-Cardinal Sin (un-normalized) twists back and forth like a sinc function (sin(x)/x).
+Cardinal Sin (un-normalized) twists back and forth like a sinc function (sin(x)/x).  
 Cardinal Sine (normalized) twists back and forth like a normalized sinc function (sin(pi*x)/(pi*x)).
 
 ###### Twist amplitude
