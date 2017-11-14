@@ -17,13 +17,15 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-    "name" : "Tori",
-    "author" : "Duane Dibbley",
-    "version" : (0, 3, 2),
-    "blender" : (2, 79, 0),
-    "location" : "View3D > Add > Mesh",
-    "description" : "Add-on for creating tori of varying configurations",
-    "category" : "Add Mesh"
+    "name": "Tori",
+    "author": "Duane Dibbley",
+    "version": (0, 3, 2),
+    "blender": (2, 79, 0),
+    "location": "View3D > Add > Mesh",
+    "description": "Add-on for creating tori of varying configurations",
+    "warning": "Some functionality depends on SciPy, however, this functionally is gracefully disabled if SciPy is unavailable.",
+    "wiki_url": "https://github.com/DuaneDibbley/Tori/wiki/Tori",
+    "category": "Add Mesh"
 }
 
 import bpy

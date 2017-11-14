@@ -17,13 +17,15 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-    "name" : "Elliptic Torus",
-    "author" : "Duane Dibbley",
-    "version" : (0, 3, 2),
-    "blender" : (2, 79, 0),
-    "location" : "View3D > Add > Mesh",
-    "description" : "Add an elliptic torus with the cross-section correctly following the ellipse",
-    "category" : "Add Mesh"
+    "name": "Elliptic Torus",
+    "author": "Duane Dibbley",
+    "version": (0, 3, 2),
+    "blender": (2, 79, 0),
+    "location": "View3D > Add > Mesh",
+    "description": "Add an elliptic torus with the cross-section correctly following the ellipse",
+    "warning": "Some functionality depends on SciPy, however, this functionally is gracefully disabled if SciPy is unavailable.",
+    "wiki_url": "https://github.com/DuaneDibbley/Tori/wiki/Tori",
+    "category": "Add Mesh"
 }
 
 import sys
