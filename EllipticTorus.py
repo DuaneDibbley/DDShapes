@@ -127,10 +127,10 @@ class MESH_OT_elliptic_torus_add(Operator):
   bl_idname = "mesh.elliptic_torus_add"
   bl_label = "Elliptic Torus"
   bl_options = {"REGISTER", "UNDO", "PRESET"}
-  major_axes = FloatVectorProperty(name="Ring's Semi-Axes", description="The semi-axes of the ring", default=(2.3, 1.05), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
+  ring_axes = FloatVectorProperty(name="Ring's Semi-Axes", description="The semi-axes of the ring", default=(2.3, 1.05), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
   vstep = IntProperty(name="Ring Segments", description="Number of segments for the ellipse", default=48, min=4, max=1024)
   ring_spacing_type = EnumProperty(items=getSpacingTypes, name="Ring Spacing", description="Define how to calculate the space between the points on the ring")
-  minor_axes = FloatVectorProperty(name="Cross-Section's Semi-Axes", description="The semi-axes of the cross-section", default=(0.2, 0.1), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
+  cross_axes = FloatVectorProperty(name="Cross-Section's Semi-Axes", description="The semi-axes of the cross-section", default=(0.2, 0.1), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
   ustep = IntProperty(name="Cross-Section Segments", description="Number of segments for the cross-section", default=12, min=4, max=1024)
   cross_spacing_type = EnumProperty(items=getSpacingTypes, name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section")
   cross_twist = IntProperty(name="Cross-Section Twists", description="Number of twists of the cross-section", default=0, min=0, max=256)
@@ -145,19 +145,19 @@ class MESH_OT_elliptic_torus_add(Operator):
     #Create the base shape of the cross-section
     cross = []
     for u in range(self.ustep):
-      theta, cross_normal_angle = getParamAndNormal(self.minor_axes[0], self.minor_axes[1], u, self.ustep, self.cross_spacing_type)
-      x = self.minor_axes[0]*cos(theta)
+      theta, cross_normal_angle = getParamAndNormal(self.cross_axes[0], self.cross_axes[1], u, self.ustep, self.cross_spacing_type)
+      x = self.cross_axes[0]*cos(theta)
       y = 0.0
-      z = self.minor_axes[1]*sin(theta)
+      z = self.cross_axes[1]*sin(theta)
       cross.append(Vector((x, y, z)))
 
     #Create the base shape of the ring, and combine it with information on how to rotate and align the cross-section
     ring_vert = []
     ring_norm = []
     for v in range(self.vstep):
-      phi, ring_normal_angle = getParamAndNormal(self.major_axes[0], self.major_axes[1], v, self.vstep, self.ring_spacing_type)
-      x = self.major_axes[0]*cos(phi)
-      y = self.major_axes[1]*sin(phi)
+      phi, ring_normal_angle = getParamAndNormal(self.ring_axes[0], self.ring_axes[1], v, self.vstep, self.ring_spacing_type)
+      x = self.ring_axes[0]*cos(phi)
+      y = self.ring_axes[1]*sin(phi)
       z = 0.0
       ring_vert.append(Vector((x, y, z)))
       ring_norm.append(ring_normal_angle)
