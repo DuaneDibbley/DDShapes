@@ -31,7 +31,7 @@ _Ring Spacing_ defines how to calculate the distance between the the cross-secti
 _Cross-Section's Semi-Axes_ is a 2D vector with the length of the ring's semi-axes.  
 _Cross-Section Segments_ is the number of segements into which the cross-section is divided.  
 _Cross-Section Twists_ is the number of twists to do along the ring.  
-_Twist Amplitude_ is the angle that each twist represents.  
+_Twist Amplitude_ is the angle that each twist represents. Playing with this if the twist type is set to linear will cause an abrupt twist at the bridging between the first and the last cross-section, unless 
 _Twist Type_ sets the algorithm to use for calculating the twists.  
 _Cross-Section Initial Twist_ rotates the cross-section on the Y axis **before** aligning it with the ring's normal and moving it to its position. This is the starting rotation, from which the twisting is calculated.  
 _Cross-Section Spacing_ defines how to calculate the distance between the vertices of the cross-section.  
@@ -51,8 +51,11 @@ Equirectangular Radius places vertices of the ellipse the such that the angle be
 Causes the torus to be twisted. This is calculated as if the distance between two adjacent cross-sections is constant along the circumference of the ring, so the appearance is affected by the ring spacing of the ring.
 
 ###### Twist Type
-Linear increases the twist linearly between each cross-section.  
+Linear increases the twist linearly between each cross-section.
 Sinusoidal twists back and forth like a sine wave along the tube.
+
+###### Twist amplitude
+If you set the twist type to linear, you need to make sure <_number of twists_>x<_amplitude_> is divisible by 180 (if using degrees) or pi (if using radians), or you will see an abrupt twist where the first and last cross-sections are bridged together.
 
 ##### Tube thickness
 Equal Cross-Sections leaves the cross-sections at the size defined by the cross-section axes settings. However, if the ring is highly eccentric and/or has a very low segment count, this will cause the tube to be visibly thinner near accute angles and visibly thicker near obtuse angles.  
