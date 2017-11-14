@@ -123,8 +123,6 @@ class MESH_OT_elliptic_torus_add(Operator):
     cross_twist_type = EnumProperty(items=getTwistTypes, name="Twist Type", description="Define how the twisting is done")
     cross_rotation = FloatProperty(name="Cross-Section Initial Twist", description="Initial twist of the cross-section", default=0.0, min=-pi/2.0, max=pi/2.0, step=10, precision=3, subtype="ANGLE")
     tube_thickness_method = EnumProperty(items=getThicknessMethods, name="Tube Thickness Method", description="How to calculate the tube thickness")
-    ring_location = FloatVectorProperty(name="Location", description="Location", default=(0.0, 0.0, 0.0), step=1, precision=3, subtype="XYZ", unit="LENGTH", size=3)
-    ring_rotation = FloatVectorProperty(name="Rotation", description="Rotation", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype="XYZ", unit="ROTATION", size=3)
 
     def execute(self, context):
         #Create the base shape of the cross-section
@@ -186,8 +184,6 @@ class MESH_OT_elliptic_torus_add(Operator):
         elliptic_torus_mesh.from_pydata(vertices, [], faces)
         elliptic_torus_mesh.update()
         elliptic_torus_object = bpy.data.objects.new("Elliptic Torus", elliptic_torus_mesh)
-        elliptic_torus_object.location = self.ring_location
-        elliptic_torus_object.rotation_euler = Euler(self.ring_rotation, "XYZ")
         context.scene.objects.link(elliptic_torus_object)
         elliptic_torus_object.select = True
         bpy.context.scene.objects.active = elliptic_torus_object
