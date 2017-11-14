@@ -79,8 +79,22 @@ def getParamAndNormal(major, minor, input_param, steps, spacing_type):
 def getTwistAngle(twist, amplitude, twist_type, v, step):
   if twist_type == "twist.sine":
     twist_angle = amplitude*sin(twist*2*v*pi/step)
-  elif twist_type == "twist.sinc":
-    twist_angle = amplitude*sinc(twist*pi*(2*v/step-1.0))
+  elif twist_type == "twist.sincn":
+    if "numpy" in sys.modules:
+      twist_angle = amplitude*sinc(twist*pi*(2*v/step-1.0))
+    elif twist*pi*(2*v/step-1.0) == 0:
+      twist_angle = amplitude
+    else:
+      twist_angle = amplitude*sin(twist*pi*(2*v/step-1.0))/(twist*pi*(2*v/step-1.0))
+
+  elif twist_type =="twist.sinc":
+    if "numpy" in sys.modules:
+      twist_angle = amplitude*sinc(twist*(2*v/step-1.0))
+    elif twist*(2*v/step-1.0) == 0:
+      twist_angle = amplitude
+    else:
+      twist_angle = amplitude*sin(twist*(2*v/step-1.0))/(twist*pi*(2*v/step-1.0))
+
   else:
     twist_angle = amplitude*twist*v/step
   return twist_angle
@@ -99,8 +113,8 @@ def getTwistTypes(self, context):
   twist_types = []
   twist_types.append(("twist.linear", "Linear", "Linearly increase the twist angle along the cicrumference of the ring"))
   twist_types.append(("twist.sine", "Sinusoidal", "Twist back and forth like a sine wave"))
-  if "numpy" in sys.modules:
-    twist_types.append(("twist.sinc", "Cardinal Sine (normalized)", "Twist back and forth like a sinc function"))
+  twist_types.append(("twist.sinc", "Cardinal Sine (un-normalized)", "Twist back and forth like a sinc function"))
+  twist_types.append(("twist.sincn", "Cardinal Sine (normalized)", "Twist back and forth like a sinc function"))
   return twist_types
 
 def getThicknessMethods(self, context):
