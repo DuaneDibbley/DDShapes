@@ -52,7 +52,9 @@ Causes the torus to be twisted. This is calculated as if the distance between tw
 
 ###### Twist Type
 Linear increases the twist linearly between each cross-section.
-Sinusoidal twists back and forth like a sine wave along the tube.
+Sinusoidal twists back and forth like a sine wave along the tube.  
+Cardinal Sin (un-normalized) twists back and forth like a sinc function (sin(x)/x).
+Cardinal Sine (normalized) twists back and forth like a normalized sinc function (sin(pi*x)/(pi*x)).
 
 ###### Twist amplitude
 If you set the twist type to linear, you need to make sure <_number of twists_>x<_amplitude_> is divisible by 180 (if using degrees) or pi (if using radians), or you will see an abrupt twist where the first and last cross-sections are bridged together.
