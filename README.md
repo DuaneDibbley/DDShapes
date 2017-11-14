@@ -1,9 +1,8 @@
 # Tori
 Blender add-ons for creating tori of varying configurations
 
-**N.B. Master Branch now depends on SciPy.**  
-For information on how to get SciPy to work in Blender, take a look at [Using 3rd party Python modules](https://blender.stackexchange.com/questions/5287/using-3rd-party-python-modules) at [Blender Stack Exchange](https://blender.stackexchange.com/).  
-If you're unable or unwilling to install SciPy, you need to stick with the 0.2 branch.
+Some functionality depends on SciPy. The existence of SciPy is checked for at run-time, and if it is not available, this functionality is gracefully disabled.  
+For information on how to get SciPy to work in Blender, take a look at [Using 3rd party Python modules](https://blender.stackexchange.com/questions/5287/using-3rd-party-python-modules) at [Blender Stack Exchange](https://blender.stackexchange.com/).
 
 -----
 
@@ -26,15 +25,15 @@ Click _Add_ -> _Mesh_ -> _Elliptic Torus_ or press Shift+A followed by M then cl
 This creates an elliptic torus with the cross-section correctly following the ellipse. It does so by calculating the normal of the ellipse and rotating the cross-section accordingly.
 
 #### Settings
-_Ring's Major Semi-Axis_ is half the length of the major axis of the ellipse.  
-_Ring's Minor Semi-Axis_ is half the length of the major axis of the ellipse.  
+_Ring's Semi-Axes_ is a 2D vector with the length of the ring's semi-axes.  
 _Ring Segments_ is the number of segements into which the ring is divided.  
 _Ring Spacing_ defines how to calculate the distance between the the cross-sections along the ring.  
-_Cross-Section's Major Semi-Axis_ is half the length of the major axis of the cross-section.  
-_Cross-Section's Minor Semi-Axis_ is half the length of the minor axis of the cross-section.  
+_Cross-Section's Semi-Axes_ is a 2D vector with the length of the ring's semi-axes.  
 _Cross-Section Segments_ is the number of segements into which the cross-section is divided.  
-_Cross-Section Twists_ is the number of half twists to do along the ring, i.e. a setting of 1 produces a Möbius band with an interior.  
-_Cross-Section Initial Rotation_ rotates the cross-section on the Y axis **before** aligning it with the ring's normal and moving it to its position. This is the starting rotation, from which the twisting is calculated.  
+_Cross-Section Twists_ is the number of twists to do along the ring.  
+_Twist Amplitude_ is the angle that each twist represents.  
+_Twist Type_ sets the algorithm to use for calculating the twists.  
+_Cross-Section Initial Twist_ rotates the cross-section on the Y axis **before** aligning it with the ring's normal and moving it to its position. This is the starting rotation, from which the twisting is calculated.  
 _Cross-Section Spacing_ defines how to calculate the distance between the vertices of the cross-section.  
 _Tube Thickness Method_ defines how to calculate the tube thickness.  
 
@@ -46,7 +45,14 @@ Setting the major semi-axis to a smaller value than the minor semi-axis is perfe
 Equal Area spacing just uses the standard equations for an ellipse, which cause the sectors of the ellipse to have an equal area.  
 Equiangular Normal places the vertices of the ellipse such that the angle between the normals to the ellipse is constant.  
 Equirectangular Radius places vertices of the ellipse the such that the angle between the radii is constant.  
-Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
+[SciPy] Equal Arc Length places the vertices of the ellipse at (roughly) equal distance along the limit curve's arc length. This is a bit slow, however, calculating the arc length is non-trivial, though I have optimised it quite a bit.
+
+##### Twisting
+Causes the torus to be twisted. This is calculated as if the distance between two adjacent cross-sections is constant along the circumference of the ring, so the appearance is affected by the ring spacing of the ring.
+
+######Twist Type
+Linear increases the twist linearly between each cross-section.  
+Sinusoidal twists back and forth like a sine wave along the tube.
 
 ##### Tube thickness
 Equal Cross-Sections leaves the cross-sections at the size defined by the cross-section axes settings. However, if the ring is highly eccentric and/or has a very low segment count, this will cause the tube to be visibly thinner near accute angles and visibly thicker near obtuse angles.  
