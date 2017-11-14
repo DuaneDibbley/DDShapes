@@ -32,9 +32,9 @@ from bpy.types import Panel, Menu, Operator
 from bpy.props import IntProperty, FloatProperty, FloatVectorProperty, EnumProperty
 from math import cos, sin, pi, fabs, sqrt, atan2
 from mathutils import Vector, Matrix, Euler
+from numpy import sinc
 
 try:
-    from numpy import sinc
     from scipy.integrate import quad
     from scipy.optimize import fsolve
     from scipy.special import hyp2f1
@@ -59,17 +59,14 @@ def getParamAndNormal(major, minor, input_param, steps, spacing_type):
     if spacing_type == "spacing.normal":
         normal_angle = 2*pi*input_param/steps
         output_param = atan2(minor*sin(2*pi*input_param/steps), major*cos(2*pi*input_param/steps))
-
     elif spacing_type == "spacing.radius":
         output_param = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
         normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
-
     elif spacing_type == "spacing.arc":
         circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
         arc_length = circumference*input_param/steps
         output_param = fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0]
         normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
-
     else:
         output_param = 2*pi*input_param/steps
         normal_angle = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
@@ -80,21 +77,9 @@ def getTwistAngle(twist, amplitude, twist_type, v, step):
     if twist_type == "twist.sine":
         twist_angle = amplitude*sin(twist*2*v*pi/step)
     elif twist_type == "twist.sincn":
-        if "numpy" in sys.modules:
-            twist_angle = amplitude*sinc(twist*pi*(2*v/step-1.0))
-        elif twist*pi*(2*v/step-1.0) == 0:
-            twist_angle = amplitude
-        else:
-            twist_angle = amplitude*sin(twist*pi*(2*v/step-1.0))/(twist*pi*(2*v/step-1.0))
-
+        twist_angle = amplitude*sinc(twist*pi*(2*v/step-1.0))
     elif twist_type =="twist.sinc":
-        if "numpy" in sys.modules:
-            twist_angle = amplitude*sinc(twist*(2*v/step-1.0))
-        elif twist*(2*v/step-1.0) == 0:
-            twist_angle = amplitude
-        else:
-            twist_angle = amplitude*sin(twist*(2*v/step-1.0))/(twist*pi*(2*v/step-1.0))
-
+        twist_angle = amplitude*sinc(twist*(2*v/step-1.0))
     else:
         twist_angle = amplitude*twist*v/step
     return twist_angle
