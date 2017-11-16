@@ -51,30 +51,51 @@ def arcFunc(param, major, minor):
 def arcLength(param, major, minor, arc_length):
     return quad(arcFunc, a=0.0, b=param, args=(major, minor))[0]-arc_length
 
+#For a set of points on the ellipse, calculate the difference
+#lengths of its two connecting edges
+def distDiffs(params, major, minor):
+    steps = len(params)
+    diff_list = []
+    for step in range(steps):
+        x_coords = [major*cos(params[step]), major*cos(params[(step+1)%steps]), major*cos(params[(step+2)%steps])]
+        y_coords = [minor*sin(params[step]), minor*sin(params[(step+1)%steps]), minor*sin(params[(step+2)%steps])]
+        dist1 = sqrt((x_coords[0]-x_coords[1])**2+(y_coords[0]-y_coords[1])**2)
+        dist2 = sqrt((x_coords[2]-x_coords[1])**2+(y_coords[2]-y_coords[1])**2)
+        diff_list.append(fabs(dist2-dist1))
+    return diff_list
+
 def getParamAndNormal(major, minor, steps, spacing_type):
     param_list = []
     normal_list = []
-    for step in range(steps):
-        #Both the parameter and the normal are always 0 at the first step
-        if step == 0:
-            param_list.append(0.0)
-            normal_list.append(0.0)
-        #All the algorithms yield the same result for circles,
-        #thus we ignore spacing_type if major and minor are equal
-        elif major == minor or spacing_type == "spacing.area":
-            param_list.append(2*pi*step/steps)
-            normal_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
-        elif spacing_type == "spacing.normal":
-            normal_list.append(2*pi*step/steps)
-            param_list.append(atan2(minor*sin(2*pi*step/steps), major*cos(2*pi*step/steps)))
-        elif spacing_type == "spacing.radius":
-            param_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
+    if spacing_type == "spacing.dist":
+        params = []
+        for step in range(steps):
+            params.append(2*step*pi/steps)
+        param_list = fsolve(distDiffs, x0=params, args=(major, minor))
+        for step in range(steps):
             normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
-        elif spacing_type == "spacing.arc":
-            circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
-            arc_length = circumference*step/steps
-            param_list.append(fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0])
-            normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
+    else:
+        for step in range(steps):
+            #Both the parameter and the normal are always 0 at the first step
+            if step == 0:
+                param_list.append(0.0)
+                normal_list.append(0.0)
+            #All the algorithms yield the same result for circles,
+            #thus we ignore spacing_type if major and minor are equal
+            elif major == minor or spacing_type == "spacing.area":
+                param_list.append(2*pi*step/steps)
+                normal_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
+            elif spacing_type == "spacing.normal":
+                normal_list.append(2*pi*step/steps)
+                param_list.append(atan2(minor*sin(2*pi*step/steps), major*cos(2*pi*step/steps)))
+            elif spacing_type == "spacing.radius":
+                param_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
+                normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
+            elif spacing_type == "spacing.arc":
+                circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
+                arc_length = circumference*step/steps
+                param_list.append(fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0])
+                normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
 
     return param_list, normal_list
 
@@ -91,11 +112,12 @@ def getTwistAngle(twist, amplitude, twist_type, v, step):
 
 def getSpacingTypes(self, context):
     spacing_types = []
-    spacing_types.append(("spacing.area", "Equal Area", "Equally increment the parameter phi equally for each point (standard ellipse equations)"))
+    spacing_types.append(("spacing.area", "Standard Ellipse Equations", "Equally increment the parameter phi equally for each point (standard ellipse equations)"))
     spacing_types.append(("spacing.normal", "Equiangular Normal", "Space between points equiangularly by the direction of the normals"))
     spacing_types.append(("spacing.radius", "Equiangular Radius", "Space between points equiangularly by the direction of the radii"))
     #Functions requiring SciPy aren't added to the list unless SciPy has been properly loaded
     if "scipy" in sys.modules:
+        spacing_types.append(("spacing.dist", "Equal Edge Length", "Place points such that all edges are of equal length"))
         spacing_types.append(("spacing.arc", "Equal Arc Length", "Place points at equal arc distance along the circumference of ellipse"))
     return spacing_types
 
