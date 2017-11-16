@@ -44,17 +44,18 @@ except ImportError:
     pass
 
 #Function to integrate to get the arc length
-def arcFunc(theta, major, minor):
-    return sqrt((-major*sin(theta))**2+(minor*cos(theta))**2)
+def arcFunc(param, major, minor):
+    return sqrt((-major*sin(param))**2+(minor*cos(param))**2)
 
 #Integrate arcFunc
-def arcLength(theta, major, minor, arc_length):
-    return quad(arcFunc, a=0.0, b=theta, args=(major, minor))[0]-arc_length
+def arcLength(param, major, minor, arc_length):
+    return quad(arcFunc, a=0.0, b=param, args=(major, minor))[0]-arc_length
 
 def getParamAndNormal(major, minor, steps, spacing_type):
     param_list = []
     normal_list = []
     for step in range(steps):
+        #Both the parameter and the normal are always 0 at the first step
         if step == 0:
             param_list.append(0.0)
             normal_list.append(0.0)
