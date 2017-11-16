@@ -38,14 +38,13 @@ class INFO_MT_dd_shapes_menu(Menu):
 
     def draw(self, context):
         layout.label(text="DD Shapes", icon='MESH_DATA')
-        self.layout.menu("INFO_MT_mesh_elliptic_torus_add", icon="MESH_TORUS")
 
 class INFO_MT_mesh_elliptic_torus_add(Menu):
     bl_idname = "INFO_MT_mesh_elliptic_torus_add"
     bl_label = "Elliptic Torus"
 
     def draw(self, context):
-        self.layout.operator("mesh.elliptic_torus_add")
+        self.layout.operator("mesh.elliptic_torus_add", icon="MESH_TORUS")
 
     INFO_MT_dd_shapes_menu.append(draw)
 
