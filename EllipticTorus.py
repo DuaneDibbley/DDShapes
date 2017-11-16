@@ -24,7 +24,7 @@ bl_info = {
     "location": "View3D > Add > Mesh",
     "description": "Add an elliptic torus with the cross-section correctly following the ellipse",
     "warning": "Some functionality depends on SciPy, however, this functionally is gracefully disabled if SciPy is unavailable.",
-    "wiki_url": "https://github.com/DuaneDibbley/Tori/wiki/Tori",
+    "wiki_url": "https://github.com/DuaneDibbley/DDShapes/wiki/DD-Shapes",
     "category": "Add Mesh"
 }
 

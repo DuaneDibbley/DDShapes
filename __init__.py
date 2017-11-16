@@ -17,14 +17,14 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-    "name": "Tori",
+    "name": "DD Shapes",
     "author": "Duane Dibbley",
     "version": (0, 3, 2),
     "blender": (2, 79, 0),
     "location": "View3D > Add > Mesh",
-    "description": "Add-on for creating tori of varying configurations",
+    "description": "Add-ons for creating various mathematically generated shapes.",
     "warning": "Some functionality depends on SciPy, however, this functionally is gracefully disabled if SciPy is unavailable.",
-    "wiki_url": "https://github.com/DuaneDibbley/Tori/wiki/Tori",
+    "wiki_url": "https://github.com/DuaneDibbley/DDShapes/wiki/DD-Shapes",
     "category": "Add Mesh"
 }
 
