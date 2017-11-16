@@ -51,29 +51,31 @@ def arcFunc(theta, major, minor):
 def arcLength(theta, major, minor, arc_length):
     return quad(arcFunc, a=0.0, b=theta, args=(major, minor))[0]-arc_length
 
-def getParamAndNormal(major, minor, input_param, steps, spacing_type):
-    if input_param == 0:
-        return 0.0, 0.0
+def getParamAndNormal(major, minor, steps, spacing_type):
+    param_list = []
+    normal_list = []
+    for step in range(steps):
+        if step == 0:
+            param_list.append(0.0)
+            normal_list.append(0.0)
+        #All the algorithms yield the same result for circles,
+        #thus we ignore spacing_type if major and minor are equal
+        elif major == minor or spacing_type == "spacing.area":
+            param_list.append(2*pi*step/steps)
+            normal_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
+        elif spacing_type == "spacing.normal":
+            normal_list.append(2*pi*step/steps)
+            param_list.append(atan2(minor*sin(2*pi*step/steps), major*cos(2*pi*step/steps)))
+        elif spacing_type == "spacing.radius":
+            param_list.append(atan2(major*sin(2*pi*step/steps), minor*cos(2*pi*step/steps)))
+            normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
+        elif spacing_type == "spacing.arc":
+            circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
+            arc_length = circumference*step/steps
+            param_list.append(fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0])
+            normal_list.append(atan2(major*sin(param_list[step]), minor*cos(param_list[step])))
 
-    if major == minor:
-        spacing_type = "spacing.area"
-
-    if spacing_type == "spacing.normal":
-        normal_angle = 2*pi*input_param/steps
-        output_param = atan2(minor*sin(2*pi*input_param/steps), major*cos(2*pi*input_param/steps))
-    elif spacing_type == "spacing.radius":
-        output_param = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
-        normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
-    elif spacing_type == "spacing.arc":
-        circumference = 2*pi*max(major, minor)*hyp2f1(-.5, .5, 1, 1-(min(major, minor)/max(major, minor))**2)
-        arc_length = circumference*input_param/steps
-        output_param = fsolve(arcLength, [0.0], args=(major, minor, arc_length))[0]
-        normal_angle = atan2(major*sin(output_param), minor*cos(output_param))
-    else:
-        output_param = 2*pi*input_param/steps
-        normal_angle = atan2(major*sin(2*pi*input_param/steps), minor*cos(2*pi*input_param/steps))
-
-    return output_param, normal_angle
+    return param_list, normal_list
 
 def getTwistAngle(twist, amplitude, twist_type, v, step):
     if twist_type == "twist.sine":
@@ -128,49 +130,47 @@ class MESH_OT_elliptic_torus_add(Operator):
 
     def execute(self, context):
         #Create the base shape of the cross-section
-        cross = []
+        cross_base_vertices = []
+        cross_params, cross_normals = getParamAndNormal(self.cross_axes[0], self.cross_axes[1], self.ustep, self.cross_spacing_type)
         for u in range(self.ustep):
-            theta, cross_normal_angle = getParamAndNormal(self.cross_axes[0], self.cross_axes[1], u, self.ustep, self.cross_spacing_type)
-            x = self.cross_axes[0]*cos(theta)
+            x = self.cross_axes[0]*cos(cross_params[u])
             y = 0.0
-            z = self.cross_axes[1]*sin(theta)
-            cross.append(Vector((x, y, z)))
+            z = self.cross_axes[1]*sin(cross_params[u])
+            cross_base_vertices.append(Vector((x, y, z)))
 
         #Create the base shape of the ring, and combine it with information on how to rotate and align the cross-section
-        ring_vert = []
-        ring_norm = []
+        ring_vertices = []
+        ring_params, ring_normals = getParamAndNormal(self.ring_axes[0], self.ring_axes[1], self.vstep, self.ring_spacing_type)
         for v in range(self.vstep):
-            phi, ring_normal_angle = getParamAndNormal(self.ring_axes[0], self.ring_axes[1], v, self.vstep, self.ring_spacing_type)
-            x = self.ring_axes[0]*cos(phi)
-            y = self.ring_axes[1]*sin(phi)
+            x = self.ring_axes[0]*cos(ring_params[v])
+            y = self.ring_axes[1]*sin(ring_params[v])
             z = 0.0
-            ring_vert.append(Vector((x, y, z)))
-            ring_norm.append(ring_normal_angle)
+            ring_vertices.append(Vector((x, y, z)))
 
         #Calculate cross-section transformation matrix for each of the vertices of the ring
-        cross_trans = []
+        cross_transforms = []
         for v in range(self.vstep):
-            prev_vert = ring_vert[(self.vstep+v-1)%self.vstep]
-            this_vert = ring_vert[v]
-            next_vert = ring_vert[(v+1)%self.vstep]
-            angle = (this_vert-prev_vert).angle(this_vert-next_vert)/2.0
+            prev_vertex = ring_vertices[(self.vstep+v-1)%self.vstep]
+            this_vertex = ring_vertices[v]
+            next_vertex = ring_vertices[(v+1)%self.vstep]
+            angle = (this_vertex-prev_vertex).angle(this_vertex-next_vertex)/2.0
             cross_trans_mat = Matrix().Rotation(self.cross_rotation+getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, v, self.vstep), 4, Vector((0.0, 1.0, 0.0)))
             if self.tube_thickness_method == "thickness.tube":
                 cross_trans_mat = Matrix().Scale(1.0/sin(angle), 4, Vector((1.0, 0.0, 0.0)))*cross_trans_mat
-            cross_trans_mat = Matrix().Rotation(ring_norm[v], 4, Vector((0.0, 0.0, 1.0)))*cross_trans_mat
-            cross_trans.append(cross_trans_mat)
+            cross_trans_mat = Matrix().Rotation(ring_normals[v], 4, Vector((0.0, 0.0, 1.0)))*cross_trans_mat
+            cross_transforms.append(cross_trans_mat)
 
         vertices = []
         faces = []
         for v in range(self.vstep):
             for u in range(self.ustep):
-                cross_vert = cross_trans[v]*cross[u]+ring_vert[v]
+                cross_vertex = cross_transforms[v]*cross_base_vertices[u]+ring_vertices[v]
 
                 #Append the vertex coordinates to the list of vertices, and append a face to the list of faces.
                 #The list of faces uses vertices that have not yet been created when appending intermediate faces,
                 #however this is remedied at the end, as then it bridges with the vertices created at the beginning.
                 #It uses modulo to make sure it doesn't overflow.
-                vertices.append(cross_vert)
+                vertices.append(cross_vertex)
                 #Offset the bridge if the angle is obtuse
                 if (cos(getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, (v+1)%self.vstep, self.vstep)-getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, v, self.vstep)) < 0.0):
                     u_bridge_pos = (u+self.ustep//2)%self.ustep
