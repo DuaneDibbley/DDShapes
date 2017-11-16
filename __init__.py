@@ -32,6 +32,14 @@ import bpy
 from bpy.types import Menu, INFO_MT_mesh_add
 from . import EllipticTorus
 
+class INFO_MT_dd_shapes_menu(Menu):
+    bl_idname = "INFO_MT_dd_shapes_menu"
+    bl_label = "DD Shapes"
+
+    def draw(self, context):
+        layout.label(text="DD Shapes", icon='MESH_DATA')
+        self.layout.menu("INFO_MT_mesh_elliptic_torus_add", icon="MESH_TORUS")
+
 class INFO_MT_mesh_elliptic_torus_add(Menu):
     bl_idname = "INFO_MT_mesh_elliptic_torus_add"
     bl_label = "Elliptic Torus"
@@ -39,12 +47,17 @@ class INFO_MT_mesh_elliptic_torus_add(Menu):
     def draw(self, context):
         self.layout.operator("mesh.elliptic_torus_add")
 
-    INFO_MT_mesh_add.append(draw)
+    INFO_MT_dd_shapes_menu.append(draw)
+
+def menu_func(self, context):
+    self.layout.menu("INFO_MT_dd_shapes_menu", text="DD Shapes", icon="MESH_DATA")
 
 def register():
+    bpy.types.INFO_MT_mesh_add.append(menu_func)
     bpy.utils.register_module(__name__)
 
 def unregister():
+    bpy.types.INFO_MT_mesh_add.remove(menu_func)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
