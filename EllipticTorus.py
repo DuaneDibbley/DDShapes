@@ -142,7 +142,7 @@ class MESH_OT_elliptic_torus_add(Operator):
     ring_axes = FloatVectorProperty(name="Ring Semi-Axes", description="The semi-axes of the ring", default=((3+sqrt(5))/2, (1+sqrt(5))/2), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
     vstep = IntProperty(name="Ring Segments", description="Number of segments for the ellipse", default=48, min=4, max=1024)
     ring_spacing_type = EnumProperty(items=getSpacingTypes, name="Ring Spacing", description="Define how to calculate the space between the points on the ring")
-    cross_axes = FloatVectorProperty(name="Cross-Section Semi-Axes", description="The semi-axes of the cross-section", default=(1.0, 2/(1+sqrt(5))), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
+    cross_axes = FloatVectorProperty(name="Cross-Section Semi-Axes", description="The semi-axes of the cross-section", default=((sqrt(5)-1)/2, (3-sqrt(5))/2), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
     ustep = IntProperty(name="Cross-Section Segments", description="Number of segments for the cross-section", default=12, min=4, max=1024)
     cross_spacing_type = EnumProperty(items=getSpacingTypes, name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section")
     cross_twist = IntProperty(name="Cross-Section Twists", description="Number of twists of the cross-section", default=0, min=0, max=256)
