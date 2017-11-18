@@ -30,10 +30,10 @@ bl_info = {
 
 import sys
 import bpy
-from bpy.types import Panel, Menu, Operator
+from bpy.types import Operator
 from bpy.props import IntProperty, FloatProperty, FloatVectorProperty, EnumProperty
 from math import cos, sin, pi, fabs, sqrt, atan2
-from mathutils import Vector, Matrix, Euler
+from mathutils import Vector, Matrix
 from numpy import sinc
 
 try:
