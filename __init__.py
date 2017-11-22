@@ -30,23 +30,29 @@ bl_info = {
 
 import bpy
 from bpy.types import Menu, INFO_MT_mesh_add
-from . import EllipticTorus
+from . import EllipticTorus, GoldenSpiral
+
+class INFO_MT_tori_add(Menu):
+    bl_idname = "INFO_MT_tori_add"
+    bl_label = "Tori"
+
+    def draw(self, context):
+        self.layout.operator("mesh.elliptic_torus_add", text="Elliptic Torus", icon="MESH_TORUS")
+
+class INFO_MT_spirals_add(Menu):
+    bl_idname = "INFO_MT_spirals_add"
+    bl_label = "Spirals"
+
+    def draw(self, context):
+        self.layout.operator("mesh.golden_spiral_add", text="Golden Spiral", icon="FORCE_VORTEX")
 
 class INFO_MT_dd_shapes_menu(Menu):
     bl_idname = "INFO_MT_dd_shapes_menu"
     bl_label = "DD Shapes"
 
     def draw(self, context):
-        layout.label(text="DD Shapes", icon='MESH_DATA')
-
-class INFO_MT_mesh_elliptic_torus_add(Menu):
-    bl_idname = "INFO_MT_mesh_elliptic_torus_add"
-    bl_label = "Elliptic Torus"
-
-    def draw(self, context):
-        self.layout.operator("mesh.elliptic_torus_add", icon="MESH_TORUS")
-
-    INFO_MT_dd_shapes_menu.append(draw)
+        self.layout.menu("INFO_MT_tori_add", text="Tori", icon="MESH_TORUS")
+        self.layout.menu("INFO_MT_spirals_add", text="Spirals", icon="FORCE_VORTEX")
 
 def menu_func(self, context):
     self.layout.menu("INFO_MT_dd_shapes_menu", text="DD Shapes", icon="MESH_DATA")
