@@ -110,51 +110,148 @@ def getTwistAngle(twist, amplitude, twist_type, v, step):
         twist_angle = amplitude*twist*v/step
     return twist_angle
 
-def getSpacingTypes(self, context):
-    spacing_types = []
-    spacing_types.append(("spacing.area", "Standard Ellipse Equations", "Equally increment the parameter phi equally for each point (standard ellipse equations)"))
-    spacing_types.append(("spacing.normal", "Equiangular Normal", "Space between points equiangularly by the direction of the normals"))
-    spacing_types.append(("spacing.radius", "Equiangular Radius", "Space between points equiangularly by the direction of the radii"))
-    #Functions requiring SciPy aren't added to the list unless SciPy has been properly loaded
-    if "scipy" in sys.modules:
-        spacing_types.append(("spacing.dist", "Equal Edge Length", "Place points such that all edges are of equal length"))
-        spacing_types.append(("spacing.arc", "Equal Arc Length", "Place points at equal arc distance along the circumference of ellipse"))
-    return spacing_types
-
-def getTwistTypes(self, context):
-    twist_types = []
-    twist_types.append(("twist.linear", "Linear", "Linearly increase the twist angle along the cicrumference of the ring"))
-    twist_types.append(("twist.sine", "Sinusoidal", "Twist back and forth like a sine wave"))
-    twist_types.append(("twist.sinc", "Cardinal Sine (un-normalized)", "Twist back and forth like a sinc function"))
-    twist_types.append(("twist.sincn", "Cardinal Sine (normalized)", "Twist back and forth like a sinc function"))
-    return twist_types
-
-def getThicknessMethods(self, context):
-    thickness_methods = []
-    thickness_methods.append(("thickness.cross", "Equal Cross-Sections", "Keep the cross-sections equally sized"))
-    thickness_methods.append(("thickness.tube", "Constant Tube Thickness", "Scale cross-sections to keep constant tube thickness"))
-    return thickness_methods
-
 class MESH_OT_elliptic_torus_add(Operator):
     bl_idname = "mesh.elliptic_torus_add"
-    bl_label = "Elliptic Torus"
+    bl_label = "Add Elliptic Torus"
     bl_options = {"REGISTER", "UNDO", "PRESET"}
-    ring_axes = FloatVectorProperty(name="Ring Semi-Axes", description="The semi-axes of the ring", default=((3+sqrt(5))/2, (1+sqrt(5))/2), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
-    vstep = IntProperty(name="Ring Segments", description="Number of segments for the ellipse", default=48, min=4, max=1024)
-    ring_spacing_type = EnumProperty(items=getSpacingTypes, name="Ring Spacing", description="Define how to calculate the space between the points on the ring")
-    cross_axes = FloatVectorProperty(name="Cross-Section Semi-Axes", description="The semi-axes of the cross-section", default=((sqrt(5)-1)/2, (3-sqrt(5))/2), min=0.0, max=100.0, step=1, precision=3, subtype="NONE", unit="NONE", size=2)
-    ustep = IntProperty(name="Cross-Section Segments", description="Number of segments for the cross-section", default=12, min=4, max=1024)
-    cross_spacing_type = EnumProperty(items=getSpacingTypes, name="Cross-Section Spacing", description="Define how to calculate the space between the points on the cross-section")
-    cross_twist = IntProperty(name="Cross-Section Twists", description="Number of twists of the cross-section", default=0, min=0, max=256)
-    cross_twist_amplitude = FloatProperty(name="Twist Amplitude", description="The angle each twist equals", default=pi, min=0, soft_max=2*pi, step=10, precision=3, subtype="ANGLE")
-    cross_twist_type = EnumProperty(items=getTwistTypes, name="Twist Type", description="Define how the twisting is done")
-    cross_rotation = FloatProperty(name="Cross-Section Initial Twist", description="Initial twist of the cross-section", default=0.0, min=-pi/2.0, max=pi/2.0, step=10, precision=3, subtype="ANGLE")
-    tube_thickness_method = EnumProperty(items=getThicknessMethods, name="Tube Thickness Method", description="How to calculate the tube thickness")
 
+    #Callbacks for enum properties
+    #Spacing types
+    def getSpacingTypes(self, context):
+        spacing_types = []
+        spacing_types.append(("spacing.area",
+                              "Standard Ellipse Equations",
+                              "Equally increment the parameter phi equally for each point (standard ellipse equations)"))
+        spacing_types.append(("spacing.normal",
+                              "Equiangular Normal",
+                              "Space between points equiangularly by the direction of the normals"))
+        spacing_types.append(("spacing.radius",
+                              "Equiangular Radius",
+                              "Space between points equiangularly by the direction of the radii"))
+
+        #Functions requiring SciPy aren't added to the list unless SciPy has been properly loaded
+        if "scipy" in sys.modules:
+            spacing_types.append(("spacing.dist",
+                                  "Equal Edge Length",
+                                  "Place points such that all edges are of equal length"))
+            spacing_types.append(("spacing.arc",
+                                  "Equal Arc Length",
+                                  "Place points at equal arc distance along the circumference of ellipse"))
+
+        return spacing_types
+
+    #Twisting types
+    def getTwistTypes(self, context):
+        twist_types = []
+        twist_types.append(("twist.linear",
+                            "Linear",
+                            "Linearly increase the twist angle along the cicrumference of the ring"))
+        twist_types.append(("twist.sine",
+                            "Sinusoidal",
+                            "Twist back and forth like a sine wave"))
+        twist_types.append(("twist.sinc",
+                            "Cardinal Sine (un-normalized)",
+                            "Twist back and forth like a sinc function"))
+        twist_types.append(("twist.sincn",
+                            "Cardinal Sine (normalized)",
+                            "Twist back and forth like a sinc function"))
+        return twist_types
+
+    #Thickness methods
+    def getThicknessMethods(self, context):
+        thickness_methods = []
+        thickness_methods.append(("thickness.cross",
+                                  "Equal Cross-Sections",
+                                  "Keep the cross-sections equally sized"))
+        thickness_methods.append(("thickness.tube",
+                                  "Constant Tube Thickness",
+                                  "Scale cross-sections to keep constant tube thickness"))
+        return thickness_methods
+
+    #Property definitions
+    ring_axes = FloatVectorProperty(name="Ring Semi-Axes",
+                                    description="The semi-axes of the ring",
+                                    default=((3+sqrt(5))/2, (1+sqrt(5))/2),
+                                    min=0.0,
+                                    max=100.0,
+                                    step=1,
+                                    precision=3,
+                                    subtype="NONE",
+                                    unit="NONE",
+                                    size=2)
+    vstep = IntProperty(name="Ring Segments",
+                        description="Number of segments for the ellipse",
+                        default=48,
+                        min=4,
+                        max=1024)
+    ring_spacing_type = EnumProperty(items=getSpacingTypes,
+                                     name="Ring Spacing",
+                                     description="Define how to calculate the space between the points on the ring")
+    cross_axes = FloatVectorProperty(name="Cross-Section Semi-Axes",
+                                     description="The semi-axes of the cross-section",
+                                     default=((sqrt(5)-1)/2, (3-sqrt(5))/2),
+                                     min=0.0,
+                                     max=100.0,
+                                     step=1,
+                                     precision=3,
+                                     subtype="NONE",
+                                     unit="NONE",
+                                     size=2)
+    ustep = IntProperty(name="Cross-Section Segments",
+                        description="Number of segments for the cross-section",
+                        default=12,
+                        min=4,
+                        max=1024)
+    cross_spacing_type = EnumProperty(items=getSpacingTypes,
+                                      name="Cross-Section Spacing",
+                                      description="Define how to calculate the space between the points on the cross-section")
+    cross_twist = IntProperty(name="Cross-Section Twists",
+                              description="Number of twists of the cross-section",
+                              default=0,
+                              min=0,
+                              max=256)
+    cross_twist_amplitude = FloatProperty(name="Twist Amplitude",
+                                          description="The angle each twist equals",
+                                          default=pi,
+                                          min=0,
+                                          soft_max=2*pi,
+                                          step=10,
+                                          precision=3,
+                                          subtype="ANGLE")
+    cross_twist_type = EnumProperty(items=getTwistTypes,
+                                    name="Twist Type",
+                                    description="Define how the twisting is done")
+    cross_rotation = FloatProperty(name="Cross-Section Initial Twist",
+                                   description="Initial twist of the cross-section",
+                                   default=0.0,
+                                   min=-pi/2.0,
+                                   max=pi/2.0,
+                                   step=10,
+                                   precision=3,
+                                   subtype="ANGLE")
+    tube_thickness_method = EnumProperty(items=getThicknessMethods,
+                                         name="Tube Thickness Method",
+                                         description="How to calculate the tube thickness")
+
+    #Create the mesh
     def execute(self, context):
-        #Create the base shape of the cross-section
+
+        #Initial values for variables
         cross_base_vertices = []
-        cross_params, cross_normals = getParamAndNormal(self.cross_axes[0], self.cross_axes[1], self.ustep, self.cross_spacing_type)
+        cross_transforms = []
+        ring_vertices = []
+        vertices = []
+        faces = []
+        cross_params, cross_normals = getParamAndNormal(self.cross_axes[0],
+                                                        self.cross_axes[1],
+                                                        self.ustep,
+                                                        self.cross_spacing_type)
+        ring_params, ring_normals = getParamAndNormal(self.ring_axes[0],
+                                                      self.ring_axes[1],
+                                                      self.vstep,
+                                                      self.ring_spacing_type)
+
+        #Create the base shape of the cross-section
         for u in range(self.ustep):
             x = self.cross_axes[0]*cos(cross_params[u])
             y = 0.0
@@ -162,8 +259,6 @@ class MESH_OT_elliptic_torus_add(Operator):
             cross_base_vertices.append(Vector((x, y, z)))
 
         #Create the base shape of the ring, and combine it with information on how to rotate and align the cross-section
-        ring_vertices = []
-        ring_params, ring_normals = getParamAndNormal(self.ring_axes[0], self.ring_axes[1], self.vstep, self.ring_spacing_type)
         for v in range(self.vstep):
             x = self.ring_axes[0]*cos(ring_params[v])
             y = self.ring_axes[1]*sin(ring_params[v])
@@ -171,20 +266,24 @@ class MESH_OT_elliptic_torus_add(Operator):
             ring_vertices.append(Vector((x, y, z)))
 
         #Calculate cross-section transformation matrix for each of the vertices of the ring
-        cross_transforms = []
         for v in range(self.vstep):
             prev_vertex = ring_vertices[(self.vstep+v-1)%self.vstep]
             this_vertex = ring_vertices[v]
             next_vertex = ring_vertices[(v+1)%self.vstep]
             angle = (this_vertex-prev_vertex).angle(this_vertex-next_vertex)/2.0
-            cross_trans_mat = Matrix().Rotation(self.cross_rotation+getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, v, self.vstep), 4, Vector((0.0, 1.0, 0.0)))
+            cross_trans_mat = Matrix().Rotation(self.cross_rotation+getTwistAngle(self.cross_twist,
+                                                                                  self.cross_twist_amplitude,
+                                                                                  self.cross_twist_type,
+                                                                                  v,
+                                                                                  self.vstep),
+                                                4,
+                                                Vector((0.0, 1.0, 0.0)))
             if self.tube_thickness_method == "thickness.tube":
                 cross_trans_mat = Matrix().Scale(1.0/sin(angle), 4, Vector((1.0, 0.0, 0.0)))*cross_trans_mat
             cross_trans_mat = Matrix().Rotation(ring_normals[v], 4, Vector((0.0, 0.0, 1.0)))*cross_trans_mat
             cross_transforms.append(cross_trans_mat)
 
-        vertices = []
-        faces = []
+        #Put a cross-section at each ring vertex and connect with faces
         for v in range(self.vstep):
             for u in range(self.ustep):
                 cross_vertex = cross_transforms[v]*cross_base_vertices[u]+ring_vertices[v]
@@ -195,11 +294,26 @@ class MESH_OT_elliptic_torus_add(Operator):
                 #It uses modulo to make sure it doesn't overflow.
                 vertices.append(cross_vertex)
                 #Offset the bridge if the angle is obtuse
-                if (cos(getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, (v+1)%self.vstep, self.vstep)-getTwistAngle(self.cross_twist, self.cross_twist_amplitude, self.cross_twist_type, v, self.vstep)) < 0.0):
+                if (cos(getTwistAngle(self.cross_twist, 
+                                      self.cross_twist_amplitude,
+                                      self.cross_twist_type,
+                                      (v+1)%self.vstep, self.vstep)-
+                        getTwistAngle(self.cross_twist,
+                                      self.cross_twist_amplitude,
+                                      self.cross_twist_type,
+                                      v,
+                                      self.vstep)) < 0.0):
+
                     u_bridge_pos = (u+self.ustep//2)%self.ustep
+
                 else:
+
                     u_bridge_pos = u
-                faces.append([v*self.ustep+u, ((v+1)%self.vstep)*self.ustep+u_bridge_pos, ((v+1)%self.vstep)*self.ustep+((u_bridge_pos+1)%self.ustep), v*self.ustep+((u+1)%self.ustep)])
+
+                faces.append([v*self.ustep+u,
+                              ((v+1)%self.vstep)*self.ustep+u_bridge_pos,
+                              ((v+1)%self.vstep)*self.ustep+((u_bridge_pos+1)%self.ustep),
+                              v*self.ustep+((u+1)%self.ustep)])
 
         #Deselect everything
         bpy.ops.object.select_all(action="DESELECT")

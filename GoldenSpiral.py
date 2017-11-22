@@ -36,16 +36,43 @@ from mathutils import Vector, Matrix
 
 class MESH_OT_golden_spiral_add(Operator):
     bl_idname = "mesh.golden_spiral_add"
-    bl_label = "Golden Spiral"
+    bl_label = "Add Golden Spiral"
     bl_options = {"REGISTER", "UNDO"}
 
     #Define properties
-    turns = IntProperty(name="Turns", description="Number of 90 degree turns", default=4, min=1)
-    resolution = IntProperty(name="Resolution", description="Number of segments for each 90 degree turn", default=4, min=1, max=16)
-    initial_radius = FloatProperty(name="Initial Radius", description="Initial radius of the spiral", default=1.0, min=0.01, step=1, precision=2)
-    cross_segments = IntProperty(name="Cross-Section Segments", description="Number of segments of the cross-section", default=4, min=1, max=256)
-    cross_twist = IntProperty(name="Cross-Section Twist", description="Number of 90 degree twists the cross-sections do for each 90 degree turn of the spiral", default=0, min=0, soft_max=4, max=16)
-    thickness_scaling = FloatProperty(name="Thickness Scaling", description="Cross-section thickness as a fraction of spiral radius", default=0.25, min=0.0, max=1.0, step=1, precision=2)
+    turns = IntProperty(name="Turns",
+                        description="Number of 90 degree turns",
+                        default=4,
+                        min=1)
+    resolution = IntProperty(name="Resolution",
+                             description="Number of segments for each 90 degree turn",
+                             default=4,
+                             min=1,
+                             max=16)
+    initial_radius = FloatProperty(name="Initial Radius",
+                                   description="Initial radius of the spiral",
+                                   default=1.0,
+                                   min=0.01,
+                                   step=1,
+                                   precision=2)
+    cross_segments = IntProperty(name="Cross-Section Segments",
+                                 description="Number of segments of the cross-section",
+                                 default=4,
+                                 min=1,
+                                 max=256)
+    cross_twist = IntProperty(name="Cross-Section Twist",
+                              description="Number of 90 degree twists the cross-sections do for each 90 degree turn of the spiral",
+                              default=0,
+                              min=0,
+                              soft_max=4,
+                              max=16)
+    thickness_scaling = FloatProperty(name="Thickness Scaling",
+                                      description="Cross-section thickness as a fraction of spiral radius",
+                                      default=0.25,
+                                      min=0.0,
+                                      max=1.0,
+                                      step=1,
+                                      precision=2)
 
     #Variable definitions
     phi = (1+sqrt(5))/2 #Golden ratio
@@ -96,7 +123,10 @@ class MESH_OT_golden_spiral_add(Operator):
             for v in range(self.cross_segments):
                 vertices.append(cross_transform[u]*cross_vertices[v]+spiral_vertices[u])
                 if u < self.resolution*self.turns:
-                    faces.append([u*self.cross_segments+v, (u+1)*self.cross_segments+v, (u+1)*self.cross_segments+(v+1)%self.cross_segments, u*self.cross_segments+(v+1)%self.cross_segments])
+                    faces.append([u*self.cross_segments+v,
+                                  (u+1)*self.cross_segments+v,
+                                  (u+1)*self.cross_segments+(v+1)%self.cross_segments,
+                                  u*self.cross_segments+(v+1)%self.cross_segments])
 
         bpy.ops.object.select_all(action="DESELECT")
 
