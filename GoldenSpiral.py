@@ -75,16 +75,16 @@ class MESH_OT_golden_spiral_add(Operator):
                                       precision=2)
 
     #Variable definitions
-    phi = (1+sqrt(5))/2 #Golden ratio
+    PHI = (1+sqrt(5))/2 #Golden ratio
 
     #Function definitions
     #Derivative of the X equation for the spiral
     def xDerivative(self, theta):
-        return -self.phi**(-2*theta/pi)*(2*cos(theta)*log(self.phi)+pi*sin(theta))/pi
+        return -self.PHI**(-2*theta/pi)*(2*cos(theta)*log(self.PHI)+pi*sin(theta))/pi
 
     #Derivative of the Y equation for the spiral
     def yDerivative(self, theta):
-        return self.phi**(-2*theta/pi)*(-2*sin(theta)*log(self.phi)+pi*cos(theta))/pi
+        return self.PHI**(-2*theta/pi)*(-2*sin(theta)*log(self.PHI)+pi*cos(theta))/pi
 
     #Angle of the tangent line to the spiral
     def normalAngle(self, theta):
@@ -93,8 +93,14 @@ class MESH_OT_golden_spiral_add(Operator):
     #Create the mesh
     def execute(self, context):
 
-        #Define the base shape of the cross-sections
+        #Initial values
         cross_vertices = []
+        cross_transform = []
+        spiral_vertices = []
+        vertices = []
+        faces = []
+
+        #Define the base shape of the cross-sections
         for v in range(self.cross_segments):
             theta = 2*v*pi/self.cross_segments
             x = cos(theta)
@@ -103,21 +109,18 @@ class MESH_OT_golden_spiral_add(Operator):
             cross_vertices.append(Vector((x, y, z)))
 
         #Define the base shape of the spiral
-        spiral_vertices = []
-        cross_transform = []
         for u in range(self.resolution*self.turns+1):
             theta = u*pi/(2*self.resolution)
-            r = self.initial_radius*self.phi**(-u/self.resolution)
+            r = self.initial_radius*self.PHI**(-u/self.resolution)
             x = r*cos(theta)
             y = r*sin(theta)
             z = 0.0
             spiral_vertices.append(Vector((x, y, z)))
+            twist_angle = u*pi*self.cross_twist/(2*self.resolution)
             scale = Matrix().Scale(r*self.thickness_scaling, 4)
             rotation = Matrix().Rotation(self.normalAngle(theta), 4, Vector((0.0, 0.0, 1.0)))
-            cross_transform.append(rotation*scale)
-
-        vertices = []
-        faces = []
+            twist = Matrix().Rotation(twist_angle, 4, Vector((0.0, 1.0, 0.0)))
+            cross_transform.append(rotation*twist*scale)
 
         for u in range(self.resolution*self.turns+1):
             for v in range(self.cross_segments):
