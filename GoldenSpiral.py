@@ -79,7 +79,7 @@ class MESH_OT_golden_spiral_add(Operator):
         cross_transform = []
         for u in range(self.resolution*self.turns+1):
             theta = u*pi/(2*self.resolution)
-            r = self.phi**(-u/self.resolution)
+            r = self.initial_radius*self.phi**(-u/self.resolution)
             x = r*cos(theta)
             y = r*sin(theta)
             z = 0.0
