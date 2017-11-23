@@ -19,7 +19,7 @@
 bl_info = {
     "name": "DD Shapes",
     "author": "Duane Dibbley",
-    "version": (0, 3, 2),
+    "version": (0, 4, 0),
     "blender": (2, 79, 0),
     "location": "View3D > Add > Mesh",
     "description": "Add-ons for creating various mathematically generated shapes.",
@@ -30,7 +30,7 @@ bl_info = {
 
 import bpy
 from bpy.types import Menu, INFO_MT_mesh_add
-from . import EllipticTorus, GoldenSpiral
+from . import EllipticTorus, LogSpiral
 
 class INFO_MT_tori_add(Menu):
     bl_idname = "INFO_MT_tori_add"
@@ -44,7 +44,7 @@ class INFO_MT_spirals_add(Menu):
     bl_label = "Spirals"
 
     def draw(self, context):
-        self.layout.operator("mesh.golden_spiral_add", text="Golden Spiral", icon="FORCE_VORTEX")
+        self.layout.operator("mesh.log_spiral_add", text="Logarithmic Spiral", icon="FORCE_VORTEX")
 
 class INFO_MT_dd_shapes_menu(Menu):
     bl_idname = "INFO_MT_dd_shapes_menu"
