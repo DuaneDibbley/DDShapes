@@ -17,12 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-    "name": "Golden Spiral",
+    "name": "Logarithmic Spiral",
     "author": "Duane Dibbley",
-    "version": (0, 1, 0),
+    "version": (0, 1, 1),
     "blender": (2, 79, 0),
     "location": "View3D > Add > Mesh",
-    "description": "Add a golden spiral",
+    "description": "Add a logarithmic spiral",
     "warning": "",
     "wiki_url": "https://github.com/DuaneDibbley/DDShapes/wiki/DD-Shapes",
     "category": "Add Mesh"
@@ -34,9 +34,9 @@ from bpy.props import IntProperty, FloatProperty
 from math import sin, cos, atan2, pi, log, sqrt
 from mathutils import Vector, Matrix
 
-class MESH_OT_golden_spiral_add(Operator):
-    bl_idname = "mesh.golden_spiral_add"
-    bl_label = "Add Golden Spiral"
+class MESH_OT_log_spiral_add(Operator):
+    bl_idname = "mesh.log_spiral_add"
+    bl_label = "Add Logarithmic Spiral"
     bl_options = {"REGISTER", "UNDO"}
 
     #Define properties
@@ -55,6 +55,12 @@ class MESH_OT_golden_spiral_add(Operator):
                                    min=0.01,
                                    step=1,
                                    precision=2)
+    radius_scaling = FloatProperty(name="Radius Scaling",
+                                   description="Factor by which the radius grows for each 90 degree turn",
+                                   default=(1+sqrt(5))/2,
+                                   min=0.01,
+                                   step=1,
+                                   precision=2)
     cross_segments = IntProperty(name="Cross-Section Segments",
                                  description="Number of segments of the cross-section",
                                  default=4,
@@ -68,23 +74,20 @@ class MESH_OT_golden_spiral_add(Operator):
                               max=16)
     thickness_scaling = FloatProperty(name="Thickness Scaling",
                                       description="Cross-section thickness as a fraction of spiral radius",
-                                      default=0.25,
+                                      default=2/(1+sqrt(5)),
                                       min=0.0,
                                       max=1.0,
                                       step=1,
                                       precision=2)
 
-    #Variable definitions
-    PHI = (1+sqrt(5))/2 #Golden ratio
-
     #Function definitions
     #Derivative of the X equation for the spiral
     def xDerivative(self, theta):
-        return -self.PHI**(-2*theta/pi)*(2*cos(theta)*log(self.PHI)+pi*sin(theta))/pi
+        return -self.radius_scaling**(-2*theta/pi)*(2*cos(theta)*log(self.radius_scaling)+pi*sin(theta))/pi
 
     #Derivative of the Y equation for the spiral
     def yDerivative(self, theta):
-        return self.PHI**(-2*theta/pi)*(-2*sin(theta)*log(self.PHI)+pi*cos(theta))/pi
+        return self.radius_scaling**(-2*theta/pi)*(-2*sin(theta)*log(self.radius_scaling)+pi*cos(theta))/pi
 
     #Angle of the tangent line to the spiral
     def normalAngle(self, theta):
@@ -111,7 +114,7 @@ class MESH_OT_golden_spiral_add(Operator):
         #Define the base shape of the spiral
         for u in range(self.resolution*self.turns+1):
             theta = u*pi/(2*self.resolution)
-            r = self.initial_radius*self.PHI**(-u/self.resolution)
+            r = self.initial_radius*self.radius_scaling**(-u/self.resolution)
             x = r*cos(theta)
             y = r*sin(theta)
             z = 0.0
@@ -133,12 +136,12 @@ class MESH_OT_golden_spiral_add(Operator):
 
         bpy.ops.object.select_all(action="DESELECT")
 
-        golden_spiral_mesh = bpy.data.meshes.new("Golden Spiral")
-        golden_spiral_mesh.from_pydata(vertices, [], faces)
-        golden_spiral_mesh.update()
-        golden_spiral_object = bpy.data.objects.new("Golden Spiral", golden_spiral_mesh)
-        context.scene.objects.link(golden_spiral_object)
-        golden_spiral_object.select = True
-        bpy.context.scene.objects.active = golden_spiral_object
+        log_spiral_mesh = bpy.data.meshes.new("Logarithmic Spiral")
+        log_spiral_mesh.from_pydata(vertices, [], faces)
+        log_spiral_mesh.update()
+        log_spiral_object = bpy.data.objects.new("Logarithmic Spiral", log_spiral_mesh)
+        context.scene.objects.link(log_spiral_object)
+        log_spiral_object.select = True
+        bpy.context.scene.objects.active = log_spiral_object
 
         return {"FINISHED"}
