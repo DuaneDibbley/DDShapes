@@ -56,7 +56,7 @@ class MESH_OT_log_spiral_add(Operator):
                                    step=1,
                                    precision=2)
     radius_scaling = FloatProperty(name="Radius Scaling",
-                                   description="Factor by which the radius grows for each 90 degree turn",
+                                   description="Factor by which the radius shrinks for each 90 degree turn",
                                    default=(1+sqrt(5))/2,
                                    min=0.01,
                                    step=1,
