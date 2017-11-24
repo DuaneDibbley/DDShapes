@@ -81,12 +81,14 @@ class MESH_OT_log_spiral_add(Operator):
                                  default=4,
                                  min=1,
                                  max=256)
-    cross_twist = IntProperty(name="Cross-Section Twist",
-                              description="Number of 90 degree twists the cross-sections do for each 90 degree turn of the spiral",
-                              default=0,
-                              min=0,
-                              soft_max=4,
-                              max=16)
+    cross_twist = FloatProperty(name="Cross-Section Twist",
+                                description="The amount to twist the cross-sections for each 90 degree turn of the spiral",
+                                default=0.0,
+                                soft_min=-pi/2.0,
+                                soft_max=pi/2.0,
+                                step=10,
+                                precision=3,
+                                subtype="ANGLE")
     thickness_scaling = FloatProperty(name="Thickness Scaling",
                                       description="Cross-section thickness as a fraction of spiral radius",
                                       default=2/(1+sqrt(5)),
