@@ -19,7 +19,7 @@
 bl_info = {
     "name": "Logarithmic Spiral",
     "author": "Duane Dibbley",
-    "version": (0, 1, 1),
+    "version": (0, 2, 0),
     "blender": (2, 79, 0),
     "location": "View3D > Add > Mesh",
     "description": "Add a logarithmic spiral",
@@ -30,7 +30,7 @@ bl_info = {
 
 import bpy
 from bpy.types import Operator
-from bpy.props import IntProperty, FloatProperty
+from bpy.props import IntProperty, FloatProperty, EnumProperty
 from math import sin, cos, atan2, pi, log, sqrt
 from mathutils import Vector, Matrix
 
@@ -38,6 +38,21 @@ class MESH_OT_log_spiral_add(Operator):
     bl_idname = "mesh.log_spiral_add"
     bl_label = "Add Logarithmic Spiral"
     bl_options = {"REGISTER", "UNDO"}
+
+    #Callbacks for enum properties
+    #Cap fill types
+    def getCapFillTypes(self, context):
+        fill_types = []
+        fill_types.append(("cap.none",
+                           "None",
+                           "Don't fill at all"))
+        fill_types.append(("cap.ngon",
+                           "Ngon",
+                           "Use ngons"))
+        fill_types.append(("cap.fan",
+                           "Triangle Fan",
+                           "Use triangle fans"))
+        return fill_types
 
     #Define properties
     turns = IntProperty(name="Turns",
@@ -79,6 +94,9 @@ class MESH_OT_log_spiral_add(Operator):
                                       max=1.0,
                                       step=1,
                                       precision=2)
+    cap_fill = EnumProperty(items=getCapFillTypes,
+                            name="Cap Fill Type",
+                            description="How to fill the ends of the tube")
 
     #Function definitions
     #Derivative of the X equation for the spiral
@@ -125,14 +143,38 @@ class MESH_OT_log_spiral_add(Operator):
             twist = Matrix().Rotation(twist_angle, 4, Vector((0.0, 1.0, 0.0)))
             cross_transform.append(rotation*twist*scale)
 
+        if self.cap_fill == "cap.fan":
+            vert_offset = 1
+        else:
+            vert_offset = 0
+
         for u in range(self.resolution*self.turns+1):
             for v in range(self.cross_segments):
                 vertices.append(cross_transform[u]*cross_vertices[v]+spiral_vertices[u])
                 if u < self.resolution*self.turns:
-                    faces.append([u*self.cross_segments+v,
-                                  (u+1)*self.cross_segments+v,
-                                  (u+1)*self.cross_segments+(v+1)%self.cross_segments,
-                                  u*self.cross_segments+(v+1)%self.cross_segments])
+                    faces.append([u*self.cross_segments+v+vert_offset,
+                                  (u+1)*self.cross_segments+v+vert_offset,
+                                  (u+1)*self.cross_segments+(v+1)%self.cross_segments+vert_offset,
+                                  u*self.cross_segments+(v+1)%self.cross_segments+vert_offset])
+
+        if self.cap_fill == "cap.ngon":
+            faces.insert(0, range(self.cross_segments))
+            faces.append(range((self.resolution*self.turns+1)*self.cross_segments-1,
+                                self.resolution*self.turns*self.cross_segments-1,
+                                -1))
+        elif self.cap_fill == "cap.fan":
+            vertices.insert(0, spiral_vertices[0])
+            vertices.append(spiral_vertices[self.resolution*self.turns])
+            start_cap = []
+            end_cap = []
+            for v in range(self.cross_segments):
+                start_cap.append([0,
+                                  v+1,
+                                  (v+1)%self.cross_segments+1])
+                end_cap.append([(self.resolution*self.turns+1)*self.cross_segments+1,
+                                (self.resolution*self.turns+1)*self.cross_segments-v,
+                                (self.resolution*self.turns+1)*self.cross_segments-(v+1)%self.cross_segments])
+            faces = start_cap+faces+end_cap
 
         bpy.ops.object.select_all(action="DESELECT")
 
