@@ -89,6 +89,13 @@ class MESH_OT_log_spiral_add(Operator):
                                 step=10,
                                 precision=3,
                                 subtype="ANGLE")
+    min_thickness = FloatProperty(name="Minimum Thickness",
+                                  description="The tube radius at spiral radius 0.0",
+                                  default=0.0,
+                                  min=0.0,
+                                  soft_max=2.5,
+                                  step=1,
+                                  precision=2)
     thickness_scaling = FloatProperty(name="Thickness Scaling",
                                       description="Cross-section thickness as a fraction of spiral radius",
                                       default=2/(1+sqrt(5)),
@@ -140,7 +147,7 @@ class MESH_OT_log_spiral_add(Operator):
             z = 0.0
             spiral_vertices.append(Vector((x, y, z)))
             twist_angle = u*pi*self.cross_twist/(2*self.resolution)
-            scale = Matrix().Scale(r*self.thickness_scaling, 4)
+            scale = Matrix().Scale(r*self.thickness_scaling+self.min_thickness, 4)
             rotation = Matrix().Rotation(self.normalAngle(theta), 4, Vector((0.0, 0.0, 1.0)))
             twist = Matrix().Rotation(twist_angle, 4, Vector((0.0, 1.0, 0.0)))
             cross_transform.append(rotation*twist*scale)
